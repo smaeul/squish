@@ -1,0 +1,20 @@
+---
+# for clang-format 3.9.0
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: Empty
+AlwaysBreakAfterDefinitionReturnType: All
+AlwaysBreakAfterReturnType: AllDefinitions
+AlwaysBreakTemplateDeclarations: true
+BasedOnStyle: LLVM
+BreakBeforeBraces: WebKit
+BreakBeforeTernaryOperators: false
+BreakAfterJavaFieldAnnotations: true
+ColumnLimit: 100
+Cpp11BracedListStyle: false
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: false
+NamespaceIndentation: Inner
+SpaceAfterCStyleCast: true
+TabWidth: 4
+UseTab: ForIndentation
+...
