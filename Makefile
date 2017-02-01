@@ -1,90 +1,101 @@
 #
 # Makefile
-# Copyright © 2017 Samuel Holland <samuel@sholland.org>
+# Copyright © 2016-2017 Samuel Holland <samuel@sholland.org>
 # See LICENSE in the project directory for license terms.
 # vim: ft=make:noexpandtab:sts=4:sw=4:ts=4:tw=100
 #
 
-SRCDIR   := .
-SUFFIX   :=
+SRCDIR  := .
+SUFFIX  :=
 
 -include config.mk
 
-CFLAGS   += -std=c11 -Wall -Wextra
-CPPFLAGS += -D_POSIX_C_SOURCE=200809L -I$(srcdir)/include -Ibuild/generated/include
-LDFLAGS  +=
+AUTHOR  := Samuel Holland <samuel@sholland.org>
+PROJECT :=
+VERSION := 1.0-dev
+
+CFLAGS  += -std=c11 -Wall -Werror=implicit-function-declaration -Werror=implicit-int -Wextra
+CPPFLAGS+= -D_POSIX_C_SOURCE=200809L -I$(SRCDIR)/include -Ibuild/generated/include
+LDFLAGS +=
 
 ifneq ($(DEBUG),)
-CFLAGS   += -g -Werror -Wpedantic
+CFLAGS  += -g -Werror -Wpedantic
 else
-CPPFLAGS += -DNDEBUG
-LDFLAGS  += -s
+CPPFLAGS+= -DNDEBUG
+LDFLAGS += -s
 endif
 
-BINARIES := 
-DOCS     := LICENSE README
-HEADERS  := $(wildcard $(SRCDIR)/include/*/*.h) build/generated/include/version.h
-LIBRARIES:= 
-VERSION  := 1.0-dev
+BINSRCS := $(wildcard $(SRCDIR)/src/*.c)
+BINOBJS := $(patsubst $(SRCDIR)/src/%.c,build/obj/%.o,$(BINSRCS))
+BINARIES:= $(patsubst $(SRCDIR)/src/%.c,build/bin/%$(SUFFIX),$(BINSRCS))
 
-BINSRCS  := $(addprefix $(SRCDIR)/src/,$(addsuffix .c,$(BINARIES)))
-BINOBJS  := $(patsubst $(SRCDIR)/src/%.c,build/obj/%.o,$(BINSRCS))
-BINFILES := $(addprefix build/bin/,$(addsuffix $(SUFFIX),$(BINARIES)))
+HEADERS := $(wildcard $(SRCDIR)/include/*/*.h) build/generated/include/version.h
 
-LIBSRCS  := $(filter-out $(BINSRCS),$(wildcard $(SRCDIR)/src/*.c))
-LIBOBJS  := $(patsubst $(SRCDIR)/src/%.c,build/obj/%.o,$(LIBSRCS))
-LIBFILES := $(addprefix build/lib/lib,$(addsuffix .a,$(LIBRARIES)))
+LIBSRCS := $(wildcard $(SRCDIR)/lib/*.c)
+LIBOBJS := $(patsubst $(SRCDIR)/lib/%.c,build/lib/%.o,$(LIBSRCS))
+LIBRARY := build/lib/lib$(PROJECT).a
 
-TESTSRCS := $(wildcard $(SRCDIR)/test/*.c)
-TESTOBJS := $(patsubst $(SRCDIR)/test/%.c,build/test/%.o,$(TESTSRCS))
-TESTBINS := $(basename $(TESTOBJS))
-TESTFILES:= $(addsuffix .out,$(TESTBINS))
+TESTSRCS:= $(wildcard $(SRCDIR)/test/*.c)
+TESTOBJS:= $(patsubst $(SRCDIR)/test/%.c,build/test/%.o,$(TESTSRCS))
+TESTBINS:= $(addsuffix $(SUFFIX),$(basename $(TESTOBJS)))
+TESTOUTS:= $(patsubst %$(SUFFIX),%.out,$(TESTBINS))
 
-all: $(BINFILES) $(LIBFILES) $(TESTFILES)
+M := @printf ' %-6s %s\n'
+Q := @
+ifneq ($(V),)
+M := @\#
+Q :=
+endif
 
-bin: $(BINFILES)
+all: $(BINARIES) $(LIBRARY) $(TESTOUTS)
 
-check: $(TESTFILES)
+bin: $(BINARIES)
+
+check: $(TESTOUTS)
 
 clean:
-	@printf ' %-6s %s\n' CLEAN build
-	@rm -rf build
+	$(M) CLEAN build
+	$(Q) rm -rf build
 
 format: $(HEADERS) $(BINSRCS) $(LIBSRCS) $(TESTSRCS)
-	@clang-format -i $^
+	$(Q) clang-format -i $^
 
-lib: $(LIBFILES)
+lib: $(LIBRARY)
 
 build/bin build/generated/include build/lib build/obj build/test:
-	@mkdir -p $@
+	$(Q) mkdir -p $@
 
-build/bin/%: build/obj/%.o $(LIBFILES) | build/bin
-	@printf ' %-6s %s\n' CCLD "$@"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
+	$(M) CCLD '$@'
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -Lbuild/lib -l$(PROJECT) -o $@ $<
 
 build/generated/include/version.h: Makefile | build/generated/include
-	@printf ' %-6s %s\n' GEN "$@"
-	@printf '#define VERSION "%s"\n' "$(VERSION)" > $@
+	$(M) GEN '$@'
+	$(Q) printf '#define AUTHOR "%s"\n#define VERSION "%s"\n' "$(AUTHOR)" "$(VERSION)" > $@
 
-build/lib/lib%.a: $(LIBOBJS) | build/lib
-	@printf ' %-6s %s\n' AR "$@"
-	@$(AR) rcs $@ $^
+build/lib/lib$(PROJECT).a: $(LIBOBJS) | build/lib
+	$(M) AR '$@'
+	$(Q) $(AR) rcs $@ $^
+
+build/lib/%.o: $(SRCDIR)/lib/%.c $(HEADERS) | build/lib
+	$(M) CC '$@'
+	$(Q) $(CC) -fPIC $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 build/obj/%.o: $(SRCDIR)/src/%.c $(HEADERS) | build/obj
-	@printf ' %-6s %s\n' CC "$@"
-	@$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(M) CC '$@'
+	$(Q) $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-build/test/%: build/test/%.o $(LIBFILES) | build/test
-	@printf ' %-6s %s\n' CCLD "$@"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+build/test/%$(SUFFIX): build/test/%.o $(LIBRARY) | build/test
+	$(M) CCLD '$@'
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -Lbuild/lib -l$(PROJECT) -o $@ $<
 
 build/test/%.o: $(SRCDIR)/test/%.c $(HEADERS) | build/test
-	@printf ' %-6s %s\n' CC "$@"
-	@$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(M) CC '$@'
+	$(Q) $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-build/test/%.out: build/test/% | build/test
-	@printf ' %-6s %s\n' TEST "$<"
-	@./$< > $@
+build/test/%.out: build/test/%$(SUFFIX) | build/test
+	$(M) TEST "$<"
+	$(Q) ./$< > $@
 
 .PHONY: all bin check clean format lib
 .SECONDARY: $(BINOBJS) $(LIBOBJS) $(TESTBINS) $(TESTOBJS)
