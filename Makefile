@@ -95,7 +95,7 @@ build/test/%.o: $(SRCDIR)/test/%.c $(HEADERS) | build/test
 
 build/test/%.out: build/test/%$(SUFFIX) | build/test
 	$(M) TEST "$<"
-	$(Q) ./$< > $@
+	$(Q) ./$< $(SRCDIR)/test/testdata > $@
 
 .PHONY: all bin check clean format lib
 .SECONDARY: $(BINOBJS) $(LIBOBJS) $(TESTBINS) $(TESTOBJS)
