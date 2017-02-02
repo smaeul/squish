@@ -23,6 +23,14 @@ struct entctx {
 };
 
 /**
+ * Calculate the entropy of the distribution represented by the context structure
+ * @param context The context structure to read from
+ * @param result A double-precision variable where the entropy will be stored on success
+ * @return 0 if the operation was successful, or a negative value representing an error
+ */
+int calc_entropy(struct entctx *context, double *result);
+
+/**
  * Allocate and initialize a structure for recording byte distributions.
  * @return A pointer to the structure, or NULL if allocation failed
  */

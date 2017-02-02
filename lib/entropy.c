@@ -6,6 +6,7 @@
  */
 
 #include <errno.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -13,6 +14,36 @@
 #include <unistd.h>
 
 #include <squish/entropy.h>
+
+int
+calc_entropy(struct entctx *context, double *result)
+{
+	double esum = 0;
+	size_t csum = 0;
+
+	if (!context || !result)
+		return -EINVAL;
+
+	/* Avoid division by zero. */
+	if (!context->inputsize)
+		return -EDOM;
+	for (size_t i = 0; i < ALPHABET_SIZE; i += 1) {
+		double p = (double) context->counts[i] / (double) context->inputsize;
+
+		/* log2(0) is undefined, but we would multiply it by zero anyway, so ignore that case. */
+		if (p == 0)
+			continue;
+		/* Since 0 < p ≤ 1, log2(p) is negative, so by subtracting we get a positive sum. */
+		esum -= p * log2(p);
+		/* Sum up the character counts as a check on the input. */
+		csum += context->counts[i];
+	}
+	if (csum != context->inputsize)
+		return -EDOM;
+	*result = esum;
+
+	return 0;
+}
 
 struct entctx *
 context_new()
