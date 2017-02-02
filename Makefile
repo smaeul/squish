@@ -20,8 +20,8 @@ LDFLAGS +=
 
 ifneq ($(DEBUG),)
 CFLAGS  += -g -Werror -Wpedantic
+CPPFLAGS+= -UNDEBUG
 else
-CPPFLAGS+= -DNDEBUG
 LDFLAGS += -s
 endif
 
