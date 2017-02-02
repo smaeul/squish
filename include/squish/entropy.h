@@ -21,22 +21,32 @@ struct entctx {
 };
 
 /**
- *
+ * Allocate and initialize a structure for recording byte distributions.
+ * @return A pointer to the structure, or NULL if allocation failed
  */
 struct entctx *context_new();
 
 /**
- *
+ * Free a structure previously allocated by context_new().
+ * @param context A pointer to the structure
+ * @return 0 if the operation was successful, or a negative value representing an error
  */
 int context_free(struct entctx *context);
 
 /**
- *
+ * Count the number of bytes with each value (0-255) in the buffer
+ * @param context The context structure to update
+ * @param buffer A pointer to a buffer to read data from
+ * @param size The size of the buffer in bytes
+ * @return 0 if the operation was successful, or a negative value representing an error
  */
 int count_buffer(struct entctx *context, void *buffer, size_t size);
 
 /**
- *
+ * Count the number of bytes with each value (0-255) to the end of the file
+ * @param context The context structure to update
+ * @param fd A seekable open file descriptor to read data from
+ * @return 0 if the operation was successful, or a negative value representing an error
  */
 int count_file(struct entctx *context, int fd);
 
