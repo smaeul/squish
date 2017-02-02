@@ -12,11 +12,13 @@
 extern "C" {
 #endif
 
+#define ALPHABET_SIZE 256
+
 /**
  *
  */
 struct entctx {
-	size_t counts[256];
+	size_t counts[ALPHABET_SIZE];
 	size_t inputsize;
 };
 

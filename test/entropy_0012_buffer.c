@@ -30,7 +30,7 @@ main(void)
 	assert(c1->inputsize == SIZE);
 	for (size_t i = 0; i < SIZE; i += 1)
 		assert(c1->counts[i] == 1);
-	for (size_t i = SIZE; i < 256; i += 1)
+	for (size_t i = SIZE; i < ALPHABET_SIZE; i += 1)
 		assert(c1->counts[i] == 0);
 
 	assert(context_free(c1) == 0);

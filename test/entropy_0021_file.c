@@ -36,7 +36,7 @@ main(int argc, char *argv[])
 	}
 	assert(c1->inputsize == SIZE);
 	assert(c1->counts[0] == SIZE);
-	for (size_t i = 1; i < 256; i += 1)
+	for (size_t i = 1; i < ALPHABET_SIZE; i += 1)
 		assert(c1->counts[i] == 0);
 
 	assert(context_free(c1) == 0);
