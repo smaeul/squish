@@ -67,7 +67,7 @@ build/bin build/generated/include build/lib build/obj build/test:
 
 build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
 	$(M) CCLD '$@'
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -Lbuild/lib -l$(PROJECT) -o $@ $<
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT)
 
 build/generated/include/version.h: Makefile | build/generated/include
 	$(M) GEN '$@'
@@ -87,7 +87,7 @@ build/obj/%.o: $(SRCDIR)/src/%.c $(HEADERS) | build/obj
 
 build/test/%$(SUFFIX): build/test/%.o $(LIBRARY) | build/test
 	$(M) CCLD '$@'
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -Lbuild/lib -l$(PROJECT) -o $@ $<
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT)
 
 build/test/%.o: $(SRCDIR)/test/%.c $(HEADERS) | build/test
 	$(M) CC '$@'
