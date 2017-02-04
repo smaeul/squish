@@ -1,5 +1,4 @@
 /**
- * entropy_0021_file.c
  * Copyright © 2017 Samuel Holland <samuel@sholland.org>
  * See LICENSE in the project directory for license terms.
  * vim: ft=c:noexpandtab:sts=4:sw=4:ts=4:tw=100
