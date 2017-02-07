@@ -32,24 +32,24 @@ int
 main(void)
 {
 	unsigned char buffer[SIZE] = { 0 };
-	struct entctx *c1;
+	struct distribution *dist;
 
-	c1 = context_new();
-	assert(c1);
-	assert(iszero(c1, sizeof(struct entctx)));
+	dist = new_distribution();
+	assert(dist);
+	assert(iszero(dist, sizeof(struct distribution)));
 
 	/* Try some noop failure cases. */
-	assert(count_buffer(0, buffer, sizeof(buffer)) == -EINVAL);
+	assert(buffer_distribution(0, buffer, sizeof(buffer)) == -EINVAL);
 	assert(iszero(buffer, sizeof(buffer)));
-	assert(iszero(c1, sizeof(struct entctx)));
-	assert(count_buffer(c1, 0, sizeof(buffer)) == -EINVAL);
+	assert(iszero(dist, sizeof(struct distribution)));
+	assert(buffer_distribution(dist, 0, sizeof(buffer)) == -EINVAL);
 	assert(iszero(buffer, sizeof(buffer)));
-	assert(iszero(c1, sizeof(struct entctx)));
-	assert(count_buffer(c1, buffer, 0) == -EINVAL);
+	assert(iszero(dist, sizeof(struct distribution)));
+	assert(buffer_distribution(dist, buffer, 0) == -EINVAL);
 	assert(iszero(buffer, sizeof(buffer)));
-	assert(iszero(c1, sizeof(struct entctx)));
+	assert(iszero(dist, sizeof(struct distribution)));
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	return 0;
 }

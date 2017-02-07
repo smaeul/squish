@@ -32,48 +32,48 @@ int
 main(int argc, char *argv[])
 {
 	int dir, fd;
-	struct entctx *c1;
+	struct distribution *dist;
 
 	assert(argc >= 2);
 	assert(argv[1]);
 	dir = open(argv[1], O_DIRECTORY);
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Failure case: bad fd. */
-	assert(count_file(c1, -1) == -EINVAL);
-	assert(iszero(c1, sizeof(struct entctx)));
+	assert(file_distribution(dist, -1) == -EINVAL);
+	assert(iszero(dist, sizeof(struct distribution)));
 
 	/* Failure case: empty device. */
 	if ((fd = open("/dev/null", O_RDONLY)) >= 0) {
-		assert(count_file(c1, fd) == -EBADF);
+		assert(file_distribution(dist, fd) == -EBADF);
 		close(fd);
 	}
-	assert(iszero(c1, sizeof(struct entctx)));
+	assert(iszero(dist, sizeof(struct distribution)));
 
 	/* Failure case: device open for writing. */
 	if ((fd = open("/dev/null", O_WRONLY)) >= 0) {
-		assert(count_file(c1, fd) == -EBADF);
+		assert(file_distribution(dist, fd) == -EBADF);
 		close(fd);
 	}
-	assert(iszero(c1, sizeof(struct entctx)));
+	assert(iszero(dist, sizeof(struct distribution)));
 
 	/* Failure case: empty file. */
 	if (dir >= 0 && (fd = openat(dir, "empty.txt", O_RDONLY)) >= 0) {
-		assert(count_file(c1, fd) == -EBADF);
+		assert(file_distribution(dist, fd) == -EBADF);
 		close(fd);
 	}
-	assert(iszero(c1, sizeof(struct entctx)));
+	assert(iszero(dist, sizeof(struct distribution)));
 
 	/* Failure case: file open for writing. */
 	if (dir >= 0 && (fd = openat(dir, "empty.txt", O_WRONLY)) >= 0) {
-		assert(count_file(c1, fd) == -EBADF);
+		assert(file_distribution(dist, fd) == -EBADF);
 		close(fd);
 	}
-	assert(iszero(c1, sizeof(struct entctx)));
+	assert(iszero(dist, sizeof(struct distribution)));
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	close(dir);
 	return 0;

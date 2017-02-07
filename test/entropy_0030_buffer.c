@@ -19,35 +19,35 @@ int
 main(void)
 {
 	double entropy = SENTINEL;
-	struct entctx *c1;
+	struct distribution *dist;
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Failure case: null pointer. */
-	assert(calc_entropy(0, &entropy) == -EINVAL);
+	assert(calculate_entropy(0, &entropy) == -EINVAL);
 	assert(entropy == SENTINEL);
 
 	/* Failure case: null pointer again. */
-	assert(calc_entropy(c1, 0) == -EINVAL);
+	assert(calculate_entropy(dist, 0) == -EINVAL);
 	assert(entropy == SENTINEL);
 
 	/* Failure case: zero length. */
-	assert(calc_entropy(c1, &entropy) == -EDOM);
+	assert(calculate_entropy(dist, &entropy) == -EDOM);
 	assert(entropy == SENTINEL);
 
 	/* Failure case: data does not match length. */
-	c1->inputsize = 1;
-	assert(calc_entropy(c1, &entropy) == -EDOM);
+	dist->total = 1;
+	assert(calculate_entropy(dist, &entropy) == -EDOM);
 	assert(entropy == SENTINEL);
 
 	/* Failure case: data does not match length again. */
-	c1->counts[100] = 9000;
-	c1->inputsize = 9999;
-	assert(calc_entropy(c1, &entropy) == -EDOM);
+	dist->counts[100] = 9000;
+	dist->total = 9999;
+	assert(calculate_entropy(dist, &entropy) == -EDOM);
 	assert(entropy == SENTINEL);
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	return 0;
 }

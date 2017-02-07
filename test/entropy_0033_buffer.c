@@ -19,19 +19,19 @@ int
 main(void)
 {
 	double entropy = SENTINEL;
-	struct entctx *c1;
+	struct distribution *dist;
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Success case #3. */
-	c1->counts[0] = 3;
-	c1->counts[255] = 3;
-	c1->inputsize = 6;
-	assert(calc_entropy(c1, &entropy) == 0);
+	dist->counts[0] = 3;
+	dist->counts[255] = 3;
+	dist->total = 6;
+	assert(calculate_entropy(dist, &entropy) == 0);
 	assert(entropy == 1);
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	return 0;
 }

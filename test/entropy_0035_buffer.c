@@ -19,19 +19,19 @@ int
 main(void)
 {
 	double entropy = SENTINEL;
-	struct entctx *c1;
+	struct distribution *dist;
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Success case #5. */
 	for (size_t i = 0; i < ALPHABET_SIZE; i += 1)
-		c1->counts[i] = 20;
-	c1->inputsize = ALPHABET_SIZE * 20;
-	assert(calc_entropy(c1, &entropy) == 0);
+		dist->counts[i] = 20;
+	dist->total = ALPHABET_SIZE * 20;
+	assert(calculate_entropy(dist, &entropy) == 0);
 	assert(entropy == 8);
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	return 0;
 }

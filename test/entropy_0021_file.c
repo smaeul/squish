@@ -19,26 +19,26 @@ int
 main(int argc, char *argv[])
 {
 	int dir, fd;
-	struct entctx *c1;
+	struct distribution *dist;
 
 	assert(argc >= 2);
 	assert(argv[1]);
 	dir = open(argv[1], O_DIRECTORY);
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Success case #1. */
 	if (dir >= 0 && (fd = openat(dir, "zeroes.txt", O_RDONLY)) >= 0) {
-		assert(count_file(c1, fd) == 0);
+		assert(file_distribution(dist, fd) == 0);
 		close(fd);
 	}
-	assert(c1->inputsize == SIZE);
-	assert(c1->counts[0] == SIZE);
+	assert(dist->total == SIZE);
+	assert(dist->counts[0] == SIZE);
 	for (size_t i = 1; i < ALPHABET_SIZE; i += 1)
-		assert(c1->counts[i] == 0);
+		assert(dist->counts[i] == 0);
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	close(dir);
 	return 0;

@@ -19,20 +19,20 @@ main(void)
 		                           16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 		                           32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
 		                           48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63 };
-	struct entctx *c1;
+	struct distribution *dist;
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Success case #2. */
-	assert(count_buffer(c1, buffer, sizeof(buffer)) == 0);
-	assert(c1->inputsize == SIZE);
+	assert(buffer_distribution(dist, buffer, sizeof(buffer)) == 0);
+	assert(dist->total == SIZE);
 	for (size_t i = 0; i < SIZE; i += 1)
-		assert(c1->counts[i] == 1);
+		assert(dist->counts[i] == 1);
 	for (size_t i = SIZE; i < ALPHABET_SIZE; i += 1)
-		assert(c1->counts[i] == 0);
+		assert(dist->counts[i] == 0);
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	return 0;
 }

@@ -28,26 +28,26 @@ iszero(void *buffer, size_t size)
 int
 main(void)
 {
-	struct entctx *c1, *c2, *c3;
+	struct distribution *d1, *d2, *d3;
 
-	c1 = context_new();
-	assert(c1);
-	assert(iszero(c1, sizeof(struct entctx)));
+	d1 = new_distribution();
+	assert(d1);
+	assert(iszero(d1, sizeof(struct distribution)));
 
-	c2 = context_new();
-	assert(c2);
-	assert(c2 != c1);
-	assert(iszero(c2, sizeof(struct entctx)));
+	d2 = new_distribution();
+	assert(d2);
+	assert(d2 != d1);
+	assert(iszero(d2, sizeof(struct distribution)));
 
-	c3 = context_new();
-	assert(c3);
-	assert(c3 != c1);
-	assert(c3 != c2);
-	assert(iszero(c3, sizeof(struct entctx)));
+	d3 = new_distribution();
+	assert(d3);
+	assert(d3 != d1);
+	assert(d3 != d2);
+	assert(iszero(d3, sizeof(struct distribution)));
 
-	assert(context_free(c1) == 0);
-	assert(context_free(c2) == 0);
-	assert(context_free(c3) == 0);
+	assert(free_distribution(d1) == 0);
+	assert(free_distribution(d2) == 0);
+	assert(free_distribution(d3) == 0);
 
 	return 0;
 }

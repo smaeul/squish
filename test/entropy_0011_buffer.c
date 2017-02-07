@@ -16,19 +16,19 @@ int
 main(void)
 {
 	unsigned char buffer[SIZE] = { 0 };
-	struct entctx *c1;
+	struct distribution *dist;
 
-	c1 = context_new();
-	assert(c1);
+	dist = new_distribution();
+	assert(dist);
 
 	/* Success case #1. */
-	assert(count_buffer(c1, buffer, sizeof(buffer)) == 0);
-	assert(c1->inputsize == SIZE);
-	assert(c1->counts[0] == SIZE);
+	assert(buffer_distribution(dist, buffer, sizeof(buffer)) == 0);
+	assert(dist->total == SIZE);
+	assert(dist->counts[0] == SIZE);
 	for (size_t i = 1; i < ALPHABET_SIZE; i += 1)
-		assert(c1->counts[i] == 0);
+		assert(dist->counts[i] == 0);
 
-	assert(context_free(c1) == 0);
+	assert(free_distribution(dist) == 0);
 
 	return 0;
 }
