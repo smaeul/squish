@@ -34,25 +34,25 @@ struct distribution {
 long buffer_distribution(struct distribution *dist, void *buffer, size_t size);
 
 /**
+ * Free a structure previously allocated by distribution_new().
+ * @param dist A pointer to the structure
+ * @return 0 if the operation was successful, or a negative value representing an error
+ */
+long distribution_free(struct distribution *dist);
+
+/**
+ * Allocate and initialize a structure for recording byte distributions.
+ * @return A pointer to the structure, or NULL if allocation failed
+ */
+struct distribution *distribution_new();
+
+/**
  * Count the number of bytes with each possible value to the end of the file.
  * @param dist The distribution structure to update
  * @param fd A seekable open file descriptor to read data from
  * @return 0 if the operation was successful, or a negative value representing an error
  */
 long file_distribution(struct distribution *dist, int fd);
-
-/**
- * Free a structure previously allocated by new_distribution().
- * @param dist A pointer to the structure
- * @return 0 if the operation was successful, or a negative value representing an error
- */
-long free_distribution(struct distribution *dist);
-
-/**
- * Allocate and initialize a structure for recording byte distributions.
- * @return A pointer to the structure, or NULL if allocation failed
- */
-struct distribution *new_distribution();
 
 #ifdef __cplusplus
 }

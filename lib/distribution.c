@@ -27,6 +27,23 @@ buffer_distribution(struct distribution *dist, void *buffer, size_t size)
 }
 
 long
+distribution_free(struct distribution *dist)
+{
+	if (!dist)
+		return -EINVAL;
+
+	free(dist);
+
+	return 0;
+}
+
+struct distribution *
+distribution_new()
+{
+	return calloc(1, sizeof(struct distribution));
+}
+
+long
 file_distribution(struct distribution *dist, int fd)
 {
 	int status;
@@ -53,21 +70,4 @@ file_distribution(struct distribution *dist, int fd)
 		return -errno;
 
 	return status;
-}
-
-long
-free_distribution(struct distribution *dist)
-{
-	if (!dist)
-		return -EINVAL;
-
-	free(dist);
-
-	return 0;
-}
-
-struct distribution *
-new_distribution()
-{
-	return calloc(1, sizeof(struct distribution));
 }

@@ -21,7 +21,7 @@ main(void)
 		                           48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63 };
 	struct distribution *dist;
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 
 	/* Success case #2. */
@@ -32,7 +32,7 @@ main(void)
 	for (size_t i = SIZE; i < ALPHABET_SIZE; i += 1)
 		assert(dist->counts[i] == 0);
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	return 0;
 }

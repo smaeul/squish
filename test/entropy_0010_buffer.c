@@ -34,7 +34,7 @@ main(void)
 	unsigned char buffer[SIZE] = { 0 };
 	struct distribution *dist;
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 	assert(iszero(dist, sizeof(struct distribution)));
 
@@ -49,7 +49,7 @@ main(void)
 	assert(iszero(buffer, sizeof(buffer)));
 	assert(iszero(dist, sizeof(struct distribution)));
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	return 0;
 }

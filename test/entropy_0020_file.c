@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 	assert(argv[1]);
 	dir = open(argv[1], O_DIRECTORY);
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 
 	/* Failure case: bad fd. */
@@ -73,7 +73,7 @@ main(int argc, char *argv[])
 	}
 	assert(iszero(dist, sizeof(struct distribution)));
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	close(dir);
 	return 0;

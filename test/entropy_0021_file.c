@@ -25,7 +25,7 @@ main(int argc, char *argv[])
 	assert(argv[1]);
 	dir = open(argv[1], O_DIRECTORY);
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 
 	/* Success case #1. */
@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 	for (size_t i = 1; i < ALPHABET_SIZE; i += 1)
 		assert(dist->counts[i] == 0);
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	close(dir);
 	return 0;

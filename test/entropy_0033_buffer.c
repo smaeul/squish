@@ -21,7 +21,7 @@ main(void)
 	double entropy = SENTINEL;
 	struct distribution *dist;
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 
 	/* Success case #3. */
@@ -31,7 +31,7 @@ main(void)
 	assert(calculate_entropy(dist, &entropy) == 0);
 	assert(entropy == 1);
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	return 0;
 }

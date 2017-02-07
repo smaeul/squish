@@ -21,7 +21,7 @@ main(void)
 	double entropy = SENTINEL;
 	struct distribution *dist;
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 
 	/* Failure case: null pointer. */
@@ -47,7 +47,7 @@ main(void)
 	assert(calculate_entropy(dist, &entropy) == -EDOM);
 	assert(entropy == SENTINEL);
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	return 0;
 }

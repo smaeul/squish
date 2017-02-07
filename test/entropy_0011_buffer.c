@@ -18,7 +18,7 @@ main(void)
 	unsigned char buffer[SIZE] = { 0 };
 	struct distribution *dist;
 
-	dist = new_distribution();
+	dist = distribution_new();
 	assert(dist);
 
 	/* Success case #1. */
@@ -28,7 +28,7 @@ main(void)
 	for (size_t i = 1; i < ALPHABET_SIZE; i += 1)
 		assert(dist->counts[i] == 0);
 
-	assert(free_distribution(dist) == 0);
+	assert(distribution_free(dist) == 0);
 
 	return 0;
 }

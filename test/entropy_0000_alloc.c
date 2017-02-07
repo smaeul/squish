@@ -30,24 +30,24 @@ main(void)
 {
 	struct distribution *d1, *d2, *d3;
 
-	d1 = new_distribution();
+	d1 = distribution_new();
 	assert(d1);
 	assert(iszero(d1, sizeof(struct distribution)));
 
-	d2 = new_distribution();
+	d2 = distribution_new();
 	assert(d2);
 	assert(d2 != d1);
 	assert(iszero(d2, sizeof(struct distribution)));
 
-	d3 = new_distribution();
+	d3 = distribution_new();
 	assert(d3);
 	assert(d3 != d1);
 	assert(d3 != d2);
 	assert(iszero(d3, sizeof(struct distribution)));
 
-	assert(free_distribution(d1) == 0);
-	assert(free_distribution(d2) == 0);
-	assert(free_distribution(d3) == 0);
+	assert(distribution_free(d1) == 0);
+	assert(distribution_free(d2) == 0);
+	assert(distribution_free(d3) == 0);
 
 	return 0;
 }
