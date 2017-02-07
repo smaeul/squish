@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include <squish/entropy.h>
+#include <squish/distribution.h>
 
 static bool
 iszero(void *buffer, size_t size)

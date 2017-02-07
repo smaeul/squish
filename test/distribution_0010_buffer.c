@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include <squish/entropy.h>
+#include <squish/distribution.h>
 
 #define SIZE 64
 
