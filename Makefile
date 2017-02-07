@@ -16,11 +16,9 @@ VERSION := 1.0-dev
 
 CFLAGS  += -std=c11 -Wall -Werror=implicit-function-declaration -Werror=implicit-int -Wextra
 CPPFLAGS+= -D_POSIX_C_SOURCE=200809L -I$(SRCDIR)/include -Ibuild/generated/include
-LDFLAGS +=
 
 ifneq ($(DEBUG),)
 CFLAGS  += -g -Werror -Wpedantic
-CPPFLAGS+= -UNDEBUG
 else
 LDFLAGS += -s
 endif
