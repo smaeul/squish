@@ -27,6 +27,30 @@ buffer_distribution(struct distribution *dist, void *buffer, size_t size)
 }
 
 long
+distribution_adjust(struct distribution *dist)
+{
+	int needs_adjustment = 0;
+
+	if (!dist)
+		return -EINVAL;
+
+	for (size_t i = 0; i < ALPHABET_SIZE; i += 1) {
+		if (dist->counts[i] == 0) {
+			needs_adjustment = 1;
+			break;
+		}
+	}
+
+	if (needs_adjustment) {
+		for (size_t i = 0; i < ALPHABET_SIZE; i += 1)
+			dist->counts[i] += 1;
+		dist->total += ALPHABET_SIZE;
+	}
+
+	return 0;
+}
+
+long
 distribution_free(struct distribution *dist)
 {
 	if (!dist)

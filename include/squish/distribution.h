@@ -34,6 +34,13 @@ struct distribution {
 long buffer_distribution(struct distribution *dist, void *buffer, size_t size);
 
 /**
+ * Adjust a distribution to ensure none of the symbols in the alphabet have a count of zero.
+ * @param dist The distribution structure to update
+ * @return 0 if the operation was successful, or a negative value representing an error
+ */
+long distribution_adjust(struct distribution *dist);
+
+/**
  * Free a structure previously allocated by distribution_new().
  * @param dist A pointer to the structure
  * @return 0 if the operation was successful, or a negative value representing an error
