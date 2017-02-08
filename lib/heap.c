@@ -132,6 +132,7 @@ heap_insert(struct heap *heap, void *element)
 	heap->size += 1;
 
 	/* Bubble the element up the heap as needed (like a simplified reverse heap_fix()). */
+	index = heap->size - 1;
 	while (index > 0 && heap->predicate(elem_addr(index), elem_addr(index / 2)) > 0) {
 		memswap(elem_addr(index), elem_addr(index / 2), heap->elsize);
 		index /= 2;
