@@ -99,6 +99,24 @@ heap_free(struct heap *heap)
 	return 0;
 }
 
+size_t
+heap_getcapacity(struct heap *heap)
+{
+	if (!heap)
+		return 0;
+
+	return heap->capacity;
+}
+
+size_t
+heap_getsize(struct heap *heap)
+{
+	if (!heap)
+		return 0;
+
+	return heap->size;
+}
+
 long
 heap_insert(struct heap *heap, void *element)
 {

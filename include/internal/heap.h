@@ -34,6 +34,20 @@ long heap_extract(struct heap *heap, void *element);
 long heap_free(struct heap *heap);
 
 /**
+ * Get the capacity of a heap.
+ * @param heap A pointer to the heap
+ * @return The capacity of the heap, or 0 if the heap is not valid.
+ */
+size_t heap_getcapacity(struct heap *heap);
+
+/**
+ * Get the current size of a heap.
+ * @param heap A pointer to the heap
+ * @return The size of the heap, or 0 if the heap is not valid.
+ */
+size_t heap_getsize(struct heap *heap);
+
+/**
  * Insert a new element into a heap. This heap implementation cannot grow beyond its initial size.
  * @param heap The heap to operate on
  * @param element A pointer to the new element
