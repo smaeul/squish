@@ -22,10 +22,10 @@ main(int argc, char *argv[])
 	struct distribution dist = { 0 };
 
 	if (argc != 2 || !argv[1]) {
-		fprintf(stderr, "entropy version %s\n"
-		                "calculates entropy of a file\n\n"
+		fprintf(stderr, "entropy version %s\n%s\n\n"
+		                "calculates entropy of a file\n"
 		                "usage: %s <filename>\n",
-		        VERSION, argv[0]);
+		        VERSION, AUTHOR, argv[0]);
 		return 1;
 	}
 
@@ -35,14 +35,14 @@ main(int argc, char *argv[])
 	}
 	if ((status = file_distribution(&dist, fd)) < 0)
 		goto error;
-	printf("read %zu characters...\n", dist.total);
 	if ((status = calculate_entropy(&dist, &entropy)) < 0)
 		goto error;
 	printf("File '%s' has %.6f bits of entropy per character.\n", argv[1], entropy);
 
 error:
-	close(fd);
-	if (status)
+	if (fd >= 0)
+		close(fd);
+	if (status < 0)
 		fprintf(stderr, "Failed to calculate entropy: %s\n", strerror(-status));
 	return -status;
 }
