@@ -15,6 +15,7 @@ VERSION := 1.0-dev
 
 CFLAGS  += -std=c11 -Wall -Werror=implicit-function-declaration -Werror=implicit-int -Wextra
 CPPFLAGS+= -D_POSIX_C_SOURCE=200809L -I$(SRCDIR)/include -Ibuild/generated/include
+LIBS    += -lm
 
 ifneq ($(DEBUG),)
 CFLAGS  += -g -Werror -Wpedantic
@@ -64,7 +65,7 @@ build/bin build/generated/include build/lib build/obj build/test:
 
 build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
 	$(M) CCLD '$@'
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT)
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
 
 build/generated/include/version.h: Makefile | build/generated/include
 	$(M) GEN '$@'
@@ -84,7 +85,7 @@ build/obj/%.o: $(SRCDIR)/src/%.c $(HEADERS) | build/obj
 
 build/test/%$(SUFFIX): build/test/%.o $(LIBRARY) | build/test
 	$(M) CCLD '$@'
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT)
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
 
 build/test/%.o: $(SRCDIR)/test/%.c $(HEADERS) | build/test
 	$(M) CC '$@'
