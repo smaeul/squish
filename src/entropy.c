@@ -19,7 +19,7 @@ main(int argc, char *argv[])
 {
 	double entropy;
 	int fd, status = 0;
-	struct distribution dist = { 0 };
+	struct distribution *dist = 0;
 
 	if (argc != 2 || !argv[1]) {
 		fprintf(stderr, "entropy version %s\n%s\n\n"
@@ -33,13 +33,19 @@ main(int argc, char *argv[])
 		status = -errno;
 		goto error;
 	}
-	if ((status = file_distribution(&dist, fd)) < 0)
+	if (!(dist = distribution_new())) {
+		status = -errno;
 		goto error;
-	if ((status = calculate_entropy(&dist, &entropy)) < 0)
+	}
+	if ((status = file_distribution(dist, fd)) < 0)
+		goto error;
+	if ((status = calculate_entropy(dist, &entropy)) < 0)
 		goto error;
 	printf("File '%s' has %.6f bits of entropy per character.\n", argv[1], entropy);
 
 error:
+	if (dist)
+		distribution_free(dist);
 	if (fd >= 0)
 		close(fd);
 	if (status < 0)
