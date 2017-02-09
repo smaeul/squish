@@ -20,7 +20,7 @@ struct huffman_node {
 };
 
 struct prefixcode {
-	unsigned int words[ALPHABET_SIZE]; /**< The code word for each symbol in the alphabet. */
+	uint32_t words[ALPHABET_SIZE]; /**< The code word for each symbol in the alphabet. */
 };
 
 /**
