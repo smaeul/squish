@@ -52,19 +52,18 @@ huffman_code(struct distribution *dist, struct prefixcode **code)
 	if (!dist || !code)
 		return -EINVAL;
 
-	/* Ensure each symbol in the alphabet has a nonzero probability, or combining nodes would result
-	 * in an infinite loop of 0+0 = 0. */
-	/* TODO: make a copy to avoid modifying the original distribution. */
-	if ((status = distribution_adjust(dist)) < 0)
-		goto out;
 	/* Allocate a scratch buffer for building the Huffman tree. This needs to be twice the alphabet
 	 * size to hold all of the internal nodes. */
 	if (!(nodes = calloc(ALPHABET_SIZE * 2, sizeof(struct huffman_node)))) {
 		status = -errno;
 		goto out;
 	}
+	/* Copy the distribution to the nodes that will form the heap. Ensure each symbol in the alphabet
+	 * has a nonzero probability, or combining nodes would result in an infinite loop of 0+0 = 0.
+	 * While this does skew the distribution, the difference will be negligible for all but the
+	 * smallest of data sets. */
 	for (size_t i = 0; i < ALPHABET_SIZE; i += 1) {
-		nodes[i].count = dist->counts[i];
+		nodes[i].count = dist->counts[i] + 1;
 		nodes[i].value = i;
 	}
 	/* Create a min-heap from the adjusted distribution in the scratch buffer. */
