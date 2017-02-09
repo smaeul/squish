@@ -51,6 +51,14 @@ long huffman_compress(void *buffer, size_t size, void *output, size_t *outsize);
 long prefix_encode(struct prefixcode *code, void *buffer, size_t size, void *output,
                    size_t outsize);
 
+/**
+ * Print to the given file descriptor a tabular representation of the prefix code.
+ * @param code The prefix code to print
+ * @param fd The file descriptor to use for output
+ * @return 0 if the operation was successful, or a negative value representing an error
+ */
+long prefix_printcode(struct prefixcode *code, int fd);
+
 #ifdef __cplusplus
 }
 #endif

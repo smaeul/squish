@@ -4,8 +4,10 @@
  * vim: ft=c:noexpandtab:sts=4:sw=4:ts=4:tw=100
  */
 
+#include <ctype.h>
 #include <errno.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -42,6 +44,13 @@ static int huffman_heap(void *a, void *b);
  * @return 0 if the operation was successful, or a negative value representing an error
  */
 static long huffman_traverse(struct huffman_node *node, unsigned int path, struct prefixcode *code);
+
+/**
+ * Generate a string representation of a prefix code word.
+ * @param The word as an integer with a leading 1.
+ * @return A pointer to static storage with a string representation of the word.
+ */
+static char *prefix_format(unsigned int word);
 
 long
 huffman_code(struct distribution *dist, struct prefixcode **code)
@@ -269,6 +278,34 @@ prefix_encode(struct prefixcode *code, void *buffer, size_t size, void *output, 
 			}
 		}
 	}
+
+	return 0;
+}
+
+static char *
+prefix_format(unsigned int word)
+{
+	static char string[CHAR_BIT * sizeof(word) + 1] = { 0 };
+	size_t offset = CHAR_BIT * sizeof(word);
+
+	while (word > 1) {
+		offset -= 1;
+		string[offset] = '0' + (word & 1U);
+		word >>= 1;
+	}
+
+	return string + offset;
+}
+
+long
+prefix_printcode(struct prefixcode *code, int fd)
+{
+	if (!code)
+		return -EINVAL;
+
+	for (size_t i = 0; i < ALPHABET_SIZE; i += 1)
+		dprintf(fd, "%02zx|%c %-19s%c", i, isprint(i) ? i : ' ', prefix_format(code->words[i]),
+		        (i % 4 == 3) ? '\n' : ' ');
 
 	return 0;
 }
