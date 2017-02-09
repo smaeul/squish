@@ -169,7 +169,7 @@ huffman_compress(void *buffer, size_t size, void *output, size_t *outsize)
 		goto out;
 
 	/* Send back our result. */
-	*(void **)output = obuffer;
+	*(void **) output = obuffer;
 	*outsize = osize;
 
 out:
