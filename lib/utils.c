@@ -4,9 +4,20 @@
  * vim: ft=c:noexpandtab:sts=4:sw=4:ts=4:tw=100
  */
 
+#include <arpa/inet.h>
 #include <limits.h>
 
 #include <internal/utils.h>
+
+uint64_t
+htonll(uint64_t host)
+{
+	/* If htonl() does not swap bytes, this function does not need to either. */
+	if (htonl(1) == 1)
+		return host;
+
+	return ((uint64_t) htonl(host & UINT32_MAX) << 32) | htonl(host >> 32);
+}
 
 uint32_t
 log2u32(uint32_t n)
@@ -32,4 +43,14 @@ memswap(void *a, void *b, size_t n)
 		x[i] = y[i];
 		y[i] = z;
 	}
+}
+
+uint64_t
+ntohll(uint64_t net)
+{
+	/* If ntohl() does not swap bytes, this function does not need to either. */
+	if (ntohl(1) == 1)
+		return net;
+
+	return ((uint64_t) ntohl(net & UINT32_MAX) << 32) | ntohl(net >> 32);
 }
