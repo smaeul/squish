@@ -279,7 +279,7 @@ prefix_encode(struct prefixcode *code, void *buffer, size_t size, void *output, 
 		}
 	}
 
-	return 0;
+	return bit ? byte : byte - 1;
 }
 
 static char *
