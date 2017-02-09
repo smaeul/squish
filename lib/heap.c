@@ -169,11 +169,11 @@ heap_new(void *elements, size_t elsize, size_t nelem, int (*predicate)(void *, v
 	 * half the maximum index, so range is never an issue. */
 	for (ssize_t i = nelem / 2 - 1; i >= 0; i -= 1)
 		if (heap_fix(heap, i) < 0)
-			goto err;
+			goto error;
 
 	return heap;
 
-err:
+error:
 	if (heap)
 		free(heap);
 	return 0;
