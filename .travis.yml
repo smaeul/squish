@@ -1,2 +1,11 @@
 language: c
-script: make
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - gcc-6
+          sources:
+            - ubuntu-toolchain-r-test
+script: make CC=gcc-6
