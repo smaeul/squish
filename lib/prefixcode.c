@@ -304,8 +304,8 @@ prefix_printcode(struct prefixcode *code, int fd)
 		return -EINVAL;
 
 	for (size_t i = 0; i < ALPHABET_SIZE; i += 1)
-		dprintf(fd, "%02zx|%c %-19s%c", i, isprint(i) ? i : ' ', prefix_format(code->words[i]),
-		        (i % 4 == 3) ? '\n' : ' ');
+		dprintf(fd, "%02zx|%c %-19s%c", i, isprint(i) ? (char) i : ' ',
+		        prefix_format(code->words[i]), (i % 4 == 3) ? '\n' : ' ');
 
 	return 0;
 }
