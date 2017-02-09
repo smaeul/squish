@@ -4,7 +4,20 @@
  * vim: ft=c:noexpandtab:sts=4:sw=4:ts=4:tw=100
  */
 
+#include <limits.h>
+
 #include <internal/utils.h>
+
+uint32_t
+log2u32(uint32_t n)
+{
+	/* __builtin_clz() is not defined if the input is zero. This is not mathematically accurate, but
+	 * is at least well-defined. */
+	if (!n)
+		return 0;
+
+	return CHAR_BIT * sizeof(n) - __builtin_clz(n) - 1;
+}
 
 void
 memswap(void *a, void *b, size_t n)

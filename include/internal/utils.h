@@ -15,6 +15,14 @@ extern "C" {
 #endif
 
 /**
+ * Calculate the logarithm base 2 of the argument using integer math. The result is only dependent
+ * on the position of the first set bit, making this calculation the equivalent of floor(log2(n)).
+ * @param n The number to take the logarithm of
+ * @return The integer floor of the logarithm base 2 of the number, or 0 if the number is 0.
+ */
+uint32_t log2u32(uint32_t n);
+
+/**
  * Swap n bytes of data between two blocks of memory.
  * @param a The first block of memory
  * @param b The second block of memory
