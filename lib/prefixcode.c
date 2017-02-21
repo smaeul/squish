@@ -223,6 +223,15 @@ huffman_traverse(struct huffman_node *node, unsigned int path, struct prefixcode
 }
 
 long
+prefix_decode(struct prefixcode *code, void *buffer, size_t size, void *output, size_t outsize)
+{
+	if (!code || !buffer || !size || !output || !outsize)
+		return -EINVAL;
+
+	return -EPERM;
+}
+
+long
 prefix_encode(struct prefixcode *code, void *buffer, size_t size, void *output, size_t outsize)
 {
 	size_t byte = 0;
@@ -308,4 +317,17 @@ prefix_printcode(struct prefixcode *code, int fd)
 		        prefix_format(code->words[i]), (i % 4 == 3) ? '\n' : ' ');
 
 	return 0;
+}
+
+long
+shannon_code(struct distribution *dist, struct prefixcode **code)
+{
+	if (!dist || !code)
+		return -EINVAL;
+
+	/* Create max-heap from distribution */
+
+	/* For each element (so... heapsort) stick it in the binary tree */
+
+	return -EPERM;
 }

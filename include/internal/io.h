@@ -15,6 +15,13 @@ extern "C" {
 #endif
 
 /**
+ *
+ * @param minimum Only retry if at least this many bytes are read with each call to read(3)
+ *
+ */
+ssize_t read_retry(int fd, void *buffer, size_t size, size_t minimum);
+
+/**
  * Write a buffer to a file, retrying until the entire buffer is written.
  * @param fd The file to write to
  * @param buffer The data to write to the file

@@ -40,6 +40,12 @@ long huffman_code(struct distribution *dist, struct prefixcode **code);
 long huffman_compress(void *buffer, size_t size, void *output, size_t *outsize);
 
 /**
+ *
+ */
+long prefix_decode(struct prefixcode *code, void *buffer, size_t size, void *output,
+                   size_t outsize);
+
+/**
  * Compress a buffer using the given prefix code. The output buffer must already be allocated.
  * @param code The prefix code to use
  * @param buffer A buffer containing uncompressed data
@@ -58,6 +64,11 @@ long prefix_encode(struct prefixcode *code, void *buffer, size_t size, void *out
  * @return 0 if the operation was successful, or a negative value representing an error
  */
 long prefix_printcode(struct prefixcode *code, int fd);
+
+/**
+ *
+ */
+long shannon_code(struct distribution *dist, struct prefixcode **code);
 
 #ifdef __cplusplus
 }
