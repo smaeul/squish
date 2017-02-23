@@ -165,8 +165,8 @@ quantize(double *data, size_t length, unsigned partitions, struct result *output
 int
 main(void)
 {
-	double samples[SAMPLES] = {};
-	struct result results[TRIALS] = {};
+	double samples[SAMPLES] = { 0 };
+	struct result results[TRIALS] = { 0 };
 
 	/* Generate a set of random samples following a Gaussian distribution. */
 	srandom(SEED);
