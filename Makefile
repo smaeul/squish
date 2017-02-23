@@ -1,5 +1,4 @@
 #
-# Makefile
 # Copyright © 2016-2017 Samuel Holland <samuel@sholland.org>
 # See LICENSE in the project directory for license terms.
 # vim: ft=make:noexpandtab:sts=4:sw=4:ts=4:tw=100
@@ -11,17 +10,16 @@ SUFFIX  :=
 -include config.mk
 
 AUTHOR  := Samuel Holland <samuel@sholland.org>
-PROJECT :=
+PROJECT := quant
 VERSION := 1.0-dev
 
 CFLAGS  += -std=c11 -Wall -Werror=implicit-function-declaration -Werror=implicit-int -Wextra
-CPPFLAGS+= -D_POSIX_C_SOURCE=200809L -I$(SRCDIR)/include -Ibuild/generated/include
-LDFLAGS +=
+CPPFLAGS+= -D_XOPEN_SOURCE=700 -I$(SRCDIR)/include -Ibuild/generated/include
+LIBS    += -lm
 
 ifneq ($(DEBUG),)
 CFLAGS  += -g -Werror -Wpedantic
 else
-CPPFLAGS+= -DNDEBUG
 LDFLAGS += -s
 endif
 
@@ -67,7 +65,7 @@ build/bin build/generated/include build/lib build/obj build/test:
 
 build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
 	$(M) CCLD '$@'
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT)
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
 
 build/generated/include/version.h: Makefile | build/generated/include
 	$(M) GEN '$@'
@@ -87,7 +85,7 @@ build/obj/%.o: $(SRCDIR)/src/%.c $(HEADERS) | build/obj
 
 build/test/%$(SUFFIX): build/test/%.o $(LIBRARY) | build/test
 	$(M) CCLD '$@'
-	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT)
+	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
 
 build/test/%.o: $(SRCDIR)/test/%.c $(HEADERS) | build/test
 	$(M) CC '$@'
