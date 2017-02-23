@@ -83,7 +83,7 @@ getgrandom(double *a, double *b)
 static bool
 quantize(double *data, size_t length, unsigned partitions, struct result *output)
 {
-	double distortion, entropy, previous;
+	double distortion, previous;
 	struct partition *partdata = 0;
 
 	if (!data || !length || !partitions || !output)
@@ -98,7 +98,6 @@ quantize(double *data, size_t length, unsigned partitions, struct result *output
 		partdata[i].decision = data[0] + (data[length - 1] - data[0]) * (i + 1) / partitions;
 	output->distortion = INFINITY;
 
-	int iter = 0;
 	do {
 		/* Step 2: compute reconstruction levels. */
 		for (size_t i = 0, x = 0; i < partitions; i += 1) {
