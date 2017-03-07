@@ -1,6 +1,9 @@
 # set to a non-empty string to enable debugging
 #DEBUG :=
 
+# set to the top project directory for out-of-tree builds
+#SRCDIR := ..
+
 # suffix for binary files (e.g. .exe on windows)
 #SUFFIX :=
 
@@ -14,4 +17,4 @@
 #CPPFLAGS := 
 
 # flags to provide to the linker
-#LDFLAGS := -Wl,--hash-style=both -Wl,-O1 -Wl,-z,noexecstack -Wl,-z,now
+#LDFLAGS := -Wl,-O1 -Wl,-z,noexecstack -Wl,-z,now -Wl,-z,relro
