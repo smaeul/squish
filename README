@@ -1,0 +1,2 @@
+This C implementation uses an existing SVD implementation. This should be fine since all Matlab
+implementations will use the builtin function, so they will not implement SVD themselves either.
