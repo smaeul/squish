@@ -54,7 +54,7 @@ main(void)
 	svd(mptr, s2, BLOCKSIZE);
 
 	/* Output the transform matrix. */
-	printf("\nTransform Matrix\n");
+	printf("\nTransform Matrix (transposed to show basis vectors)\n");
 	for (size_t i = 0; i < BLOCKSIZE; i += 1) {
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
 			printf("%+.5f ", matrix[BLOCKSIZE + i][j]);
