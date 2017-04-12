@@ -27,7 +27,9 @@ BINSRCS := $(wildcard $(SRCDIR)/src/*.c)
 BINOBJS := $(patsubst $(SRCDIR)/src/%.c,build/obj/%.o,$(BINSRCS))
 BINARIES:= $(patsubst $(SRCDIR)/src/%.c,build/bin/%$(SUFFIX),$(BINSRCS))
 
-HEADERS := $(wildcard $(SRCDIR)/include/*/*.h) build/generated/include/version.h
+HEADERS := $(wildcard $(SRCDIR)/include/*/*.h) \
+  build/generated/include/image.h \
+  build/generated/include/version.h
 
 LIBSRCS := $(wildcard $(SRCDIR)/lib/*.c)
 LIBOBJS := $(patsubst $(SRCDIR)/lib/%.c,build/lib/%.o,$(LIBSRCS))
@@ -67,7 +69,11 @@ build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
 	$(M) CCLD '$@'
 	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
 
-build/generated/include/version.h: Makefile | build/generated/include
+build/generated/include/image.h: $(SRCDIR)/data/image.raw | build/generated/include
+	$(M) GEN '$@'
+	$(Q) xxd -i $< > $@.tmp && mv $@.tmp $@
+
+build/generated/include/version.h: $(SRCDIR)/Makefile | build/generated/include
 	$(M) GEN '$@'
 	$(Q) printf '#define AUTHOR "%s"\n#define VERSION "%s"\n' "$(AUTHOR)" "$(VERSION)" > $@
 

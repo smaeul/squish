@@ -12,13 +12,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "lena.h"
+#include "image.h"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(*a))
 #define BLOCKSIZE 16
-#define NUMBLOCKS (ARRAY_SIZE(lena) / BLOCKSIZE)
+#define NUMBLOCKS (ARRAY_SIZE(data_image_raw) / BLOCKSIZE)
 
-#define pixel(block, offset) ((double) lena[BLOCKSIZE * block + offset] / 0xff)
+#define pixel(block, offset) ((double) data_image_raw[BLOCKSIZE * block + offset] / 0xff)
 
 /* See svd.c for explanation. */
 void svd(double **A, double *S2, int n);
