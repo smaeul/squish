@@ -10,7 +10,7 @@ SUFFIX  :=
 -include config.mk
 
 AUTHOR  := Samuel Holland <samuel@sholland.org>
-PROJECT :=
+PROJECT := subband
 VERSION := 1.0-dev
 
 CFLAGS  += -std=c11 -Wall -Werror=implicit-function-declaration -Werror=implicit-int -Wextra
