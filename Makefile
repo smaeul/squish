@@ -60,14 +60,14 @@ format: $(HEADERS) $(BINSRCS) $(LIBSRCS) $(TESTSRCS)
 
 lib: $(LIBRARY)
 
-build/bin build/generated/include build/lib build/obj build/test:
+build build/bin build/generated/include build/lib build/obj build/test:
 	$(Q) mkdir -p $@
 
 build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
 	$(M) CCLD '$@'
 	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
 
-build/generated/include/version.h: Makefile | build/generated/include
+build/generated/include/version.h: $(SRCDIR)/Makefile | build/generated/include
 	$(M) GEN '$@'
 	$(Q) printf '#define AUTHOR "%s"\n#define VERSION "%s"\n' "$(AUTHOR)" "$(VERSION)" > $@
 
