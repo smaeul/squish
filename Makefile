@@ -62,7 +62,9 @@ format: $(HEADERS) $(BINSRCS) $(LIBSRCS) $(TESTSRCS)
 
 lib: $(LIBRARY)
 
-build/bin build/generated/include build/lib build/obj build/test:
+plot: build/plot.pdf
+
+build build/bin build/generated/include build/lib build/obj build/test:
 	$(Q) mkdir -p $@
 
 build/bin/%$(SUFFIX): build/obj/%.o $(LIBRARY) | build/bin
@@ -89,6 +91,12 @@ build/obj/%.o: $(SRCDIR)/src/%.c $(HEADERS) | build/obj
 	$(M) CC '$@'
 	$(Q) $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
+build/plot.pdf: $(BINARIES) $(SRCDIR)/scripts/basis.gnuplot | build
+	$(M) RUN '$<'
+	$(Q) build/bin/transform | tail -n 16 > build/data
+	$(M) PLOT '$@'
+	$(Q) gnuplot $(SRCDIR)/scripts/basis.gnuplot
+
 build/test/%$(SUFFIX): build/test/%.o $(LIBRARY) | build/test
 	$(M) CCLD '$@'
 	$(Q) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -Lbuild/lib -l$(PROJECT) $(LIBS)
@@ -101,5 +109,5 @@ build/test/%.out: build/test/%$(SUFFIX) | build/test
 	$(M) TEST "$<"
 	$(Q) ./$< $(SRCDIR)/test/testdata > $@
 
-.PHONY: all bin check clean format lib
+.PHONY: all bin check clean format lib plot
 .SECONDARY: $(BINOBJS) $(LIBOBJS) $(TESTBINS) $(TESTOBJS)
