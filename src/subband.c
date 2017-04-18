@@ -334,7 +334,7 @@ transpose(int16_t *image, struct region *r)
 		return false;
 
 	/* Iterate through the upper-right triangle, swapping with the lower-left triangle. */
-	for (size_t i = 0; i < r->bsize; i += 1) {
+	for (size_t i = 0; i < r->bsize - 1; i += 1) {
 		for (size_t j = i + 1; j < r->bsize; j += 1) {
 			int16_t temp = image[px(r->x + i, r->y + j)];
 			image[px(r->x + i, r->y + j)] = image[px(r->x + j, r->y + i)];
