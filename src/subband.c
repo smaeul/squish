@@ -64,7 +64,7 @@ analyze(int16_t *input, int16_t *output, struct region *r)
 		return false;
 
 	/* Allocate a temporary buffer for filtering results. */
-	if (!(temp = malloc((r->isize * r->isize) * sizeof(int16_t))))
+	if (!(temp = calloc((r->isize * r->isize), sizeof(int16_t))))
 		return false;
 	/* Apply h0 to the input and store the results in temp. */
 	if (!filter(input, temp, r, &h0))
@@ -121,7 +121,7 @@ filter_row(int16_t *input, int16_t *output, struct region *r, struct filter *f, 
 		return false;
 
 	/* Allocate a temporary buffer, including space for symmetric extension. */
-	if (!(temp = malloc((r->bsize + 2 * f->offset) * sizeof(int16_t))))
+	if (!(temp = calloc((r->bsize + 2 * f->offset), sizeof(int16_t))))
 		return false;
 	/* Left side symmetric extension, left to right in input, so right to left in temp. */
 	for (size_t i = 0; i < f->offset; i += 1)
@@ -167,9 +167,9 @@ process(char *file, unsigned int layers)
 	/* The file can be closed as soon as the memory mapping is made. */
 	close(fd);
 
-	if (!(alpha = malloc(size * sizeof(int16_t))))
+	if (!(alpha = calloc(size, sizeof(int16_t))))
 		return false;
-	if (!(beta = malloc(size * sizeof(int16_t))))
+	if (!(beta = calloc(size, sizeof(int16_t))))
 		return false;
 	/* Copy the original image so we can ping-pong between two buffers. */
 	for (ssize_t i = 0; i < size; i += 1)
@@ -256,7 +256,7 @@ saveimage(int16_t *image, struct region *r, char *file, char *suffix)
 
 	if (snprintf(fname, PATH_MAX, "%s.%s", file, suffix) >= PATH_MAX)
 		return false;
-	if (!(buffer = malloc((r->isize * r->isize) * sizeof(uint8_t))))
+	if (!(buffer = calloc((r->isize * r->isize), sizeof(uint8_t))))
 		return false;
 	if ((fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0)
 		return false;
@@ -278,7 +278,7 @@ selftest(size_t size)
 	struct region r = { size, size, 0, 0 };
 
 	/* Allocate "image". */
-	if (!(buffer = malloc(size * size * sizeof(int16_t))))
+	if (!(buffer = calloc(size * size, sizeof(int16_t))))
 		return false;
 	/* Generate input data */
 	for (size_t i = 0; i < size; i += 1)
@@ -301,10 +301,10 @@ synthesize(int16_t *input, int16_t *output, struct region *r)
 		return false;
 
 	/* Allocate a temporary buffer for upsampling results. */
-	if (!(temp = malloc((r->isize * r->isize) * sizeof(int16_t))))
+	if (!(temp = calloc((r->isize * r->isize), sizeof(int16_t))))
 		return false;
 	/* Allocate a temporary buffer for summation of the filter results. */
-	if (!(temp2 = malloc((r->isize * r->isize) * sizeof(int16_t))))
+	if (!(temp2 = calloc((r->isize * r->isize), sizeof(int16_t))))
 		return false;
 	/* Upsample the left half of the input into temp. */
 	if (!upsample(input, temp, r, false))
