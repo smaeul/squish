@@ -173,7 +173,7 @@ process(char *file, unsigned int layers)
 		return false;
 	/* Copy the original image so we can ping-pong between two buffers. */
 	for (ssize_t i = 0; i < size; i += 1)
-		alpha[i] = original[i];
+		alpha[i] = original[i] - 128;
 	/* Assume the image is sqare. Then its side length is the square root of its size. */
 	r.bsize = r.isize = sqrt(size);
 	r.x = r.y = 0;
@@ -232,8 +232,7 @@ process(char *file, unsigned int layers)
 
 	/* Calcualate the mean squared error from the original. */
 	for (off_t i = 0; i < size; i += 1) {
-		double limited = alpha[i] > 255 ? 255 : alpha[i] < 0 ? 0 : alpha[i];
-		mse += pow(limited - original[i], 2);
+		mse += pow(alpha[i] + 128 - original[i], 2);
 	}
 	mse /= size;
 	printf("    Mean error squared is %.2f brightness levels\n", mse);
@@ -262,7 +261,7 @@ saveimage(int16_t *image, struct region *r, char *file, char *suffix)
 		return false;
 	/* Convert back to one byte per pixel. */
 	for (size_t i = 0; i < r->isize * r->isize; i += 1)
-		buffer[i] = image[i];
+		buffer[i] = image[i] + 128;
 	if (!writeall(fd, buffer, r->isize * r->isize * sizeof(uint8_t)))
 		return false;
 	printf("        Saved image to '%s'\n", fname);
