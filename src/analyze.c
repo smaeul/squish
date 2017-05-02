@@ -42,6 +42,10 @@ main(int argc, char *argv[])
 		perror("Cannot open temporary file");
 		goto out_close_pipe;
 	}
+	if (unlink(tmpfile) < 0) {
+		perror("Cannot unlink temporary file");
+		goto out_close_tmpfd;
+	}
 
 	printf("Analyzing compression performance using %s\n", infile);
 	if ((compressor = fork()) < 0) {
