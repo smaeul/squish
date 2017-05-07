@@ -99,9 +99,12 @@ main(int argc, char *argv[])
 		perror("Cannot return to start of temporary file");
 		goto out_close_tmpfd;
 	}
-	err = -imagefile_compare(infd, tmpfd, &stats);
-	printf("Mean squared error of processed image: %0.2f levels²/pixel²\n", stats.mse);
-	printf("pSNR of processed image: %0.2f dB\n", stats.psnr);
+	if ((err = -imagefile_compare(infd, tmpfd, &stats))) {
+		fprintf(stderr, "Comparison failed: %s\n", strerror(err));
+	} else {
+		printf("Mean squared error of processed image: %0.2f levels²/pixel²\n", stats.mse);
+		printf("pSNR of processed image: %0.2f dB\n", stats.psnr);
+	}
 
 out_close_tmpfd:
 	close(tmpfd);

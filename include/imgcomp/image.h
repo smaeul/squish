@@ -10,8 +10,12 @@
 struct image {
 	size_t width;   /**< The width of the image in pixels. */
 	size_t height;  /**< The height of the image in pixels. */
+	size_t depth;   /**< The number of bytes used per pixel. */
 	size_t bytes;   /**< The length of the image data in bytes. */
 	uint8_t data[]; /**< The stream of bytes representing the image. */
 };
+
+int image_alloc(struct image **img, size_t width, size_t height, size_t depth);
+void image_free(struct image *img);
 
 #endif /* IMGCOMP_IMAGE_H */

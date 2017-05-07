@@ -7,11 +7,15 @@
 #ifndef IMGCOMP_IMGCOMP_H
 #define IMGCOMP_IMGCOMP_H
 
+#include <imgcomp/error.h>
 #include <imgcomp/image.h>
 #include <imgcomp/statistics.h>
+#include <imgcomp/utils.h>
 
 int imagefile_compare(int origfd, int procfd, struct image_stats *stats);
 int imagefile_compress(int infd, int outfd);
 int imagefile_decompress(int infd, int outfd);
+int imagefile_read(int fd, struct image **img);
+int imagefile_write(int fd, struct image *img);
 
 #endif /* IMGCOMP_IMGCOMP_H */
