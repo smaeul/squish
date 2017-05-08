@@ -13,9 +13,6 @@
 
 #include <imgcomp/imgcomp.h>
 
-#define IMGDEPTH 1
-#define IMGSIZE 512
-
 int
 imagefile_compare(int origfd, int procfd, struct image_stats *stats)
 {
@@ -26,9 +23,9 @@ imagefile_compare(int origfd, int procfd, struct image_stats *stats)
 	if (!stats)
 		return ERR_NULL;
 
-	if ((err = imagefile_read(origfd, IMGDEPTH, &original)) < 0)
+	if ((err = imagefile_read(origfd, TEST_DEPTH, &original)) < 0)
 		goto out;
-	if ((err = imagefile_read(procfd, IMGDEPTH, &processed)) < 0)
+	if ((err = imagefile_read(procfd, TEST_DEPTH, &processed)) < 0)
 		goto out_free_original;
 	if ((mse = image_mse(original, processed)) < 0) {
 		err = mse;
@@ -57,7 +54,7 @@ imagefile_compress(int infd, int outfd)
 	struct image *img1;
 	struct imagef *img2;
 
-	if ((err = imagefile_read(infd, IMGDEPTH, &img1)) < 0)
+	if ((err = imagefile_read(infd, TEST_DEPTH, &img1)) < 0)
 		goto out;
 	if ((err = image_fdct(img1, &img2)) < 0)
 		goto out_free_img1;
@@ -85,7 +82,7 @@ imagefile_decompress(int infd, int outfd)
 	if ((err = image_idct(img1, &img2)) < 0)
 		goto out_free_img1;
 	/* Use the expected bit depth when writing out the image. */
-	img2->depth = IMGDEPTH;
+	img2->depth = TEST_DEPTH;
 	if ((err = imagefile_write(outfd, img2)) < 0)
 		goto out_free_img2;
 	err = 0;
@@ -109,7 +106,7 @@ imagefile_read(int fd, size_t depth, struct image **img)
 	if (!depth || depth > IMAGE_MAXDEPTH)
 		return ERR_INVAL;
 
-	if ((err = image_alloc(&newimg, IMGSIZE, IMGSIZE, depth)) < 0)
+	if ((err = image_alloc(&newimg, TEST_SIZE, TEST_SIZE, depth)) < 0)
 		goto out;
 	if ((err = readall(fd, newimg->data, newimg->bytes)) < 0) {
 		image_free(newimg);

@@ -68,7 +68,7 @@ image_idct(struct imagef *original, struct image **processed)
 	if (original->width % BLOCKSIZE || original->height % BLOCKSIZE)
 		return ERR_NOTSUP;
 
-	if ((err = image_alloc(processed, original->width, original->height, 1)) < 0)
+	if ((err = image_alloc(processed, original->width, original->height, TEST_DEPTH)) < 0)
 		goto out;
 	/* Iterate over each block (rows/columns). */
 	for (size_t a = 0; a < original->height; a += BLOCKSIZE) {

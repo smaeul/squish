@@ -17,6 +17,10 @@
 /* Requires square blocks. */
 #define BLOCKSIZE 8
 
+/* Properties of the images used for testing (since they have no header). */
+#define TEST_DEPTH 1
+#define TEST_SIZE 512
+
 int imagefile_compare(int origfd, int procfd, struct image_stats *stats);
 int imagefile_compress(int infd, int outfd);
 int imagefile_decompress(int infd, int outfd);
