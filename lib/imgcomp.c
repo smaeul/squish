@@ -120,11 +120,13 @@ imagefile_read(int fd, size_t depth, struct image **img)
 
 		/* Treat the first pixel separately, since memcpy cannot overlap. */
 		for (size_t i = newimg->bytes - 1; i > 0; i -= 1) {
-			/* We must clear the padding bytes anyway, so copy all four bytes first. */
+			/* We must overwrite the padding bytes anyway, so copy all four bytes first. */
 			memcpy(buffer + IMAGE_MAXDEPTH * (i + 1) - depth, buffer + depth * i, depth);
-			memset(buffer + IMAGE_MAXDEPTH * i, 0, IMAGE_MAXDEPTH - depth);
+			/* Fill in remaining bytes with a copy of the LSB for better rounding. */
+			memset(buffer + IMAGE_MAXDEPTH * i, buffer[depth * i], IMAGE_MAXDEPTH - depth);
 		}
 		newimg->data[0] <<= (IMAGE_MAXDEPTH - depth) * CHAR_BIT;
+		memset(buffer, buffer[IMAGE_MAXDEPTH - depth], IMAGE_MAXDEPTH - depth);
 	}
 	*img = newimg;
 	err = 0;
