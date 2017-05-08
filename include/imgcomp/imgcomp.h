@@ -9,6 +9,8 @@
 
 #include <imgcomp/error.h>
 #include <imgcomp/image.h>
+
+#include <imgcomp/dct.h>
 #include <imgcomp/statistics.h>
 #include <imgcomp/utils.h>
 
