@@ -40,7 +40,7 @@ image_dequant_unif(struct image *original, struct imagef **processed, float step
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
-			steps[i][j] = step;
+			steps[i][j] = step * (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
 	image_do_dequant(original, *processed, steps);
 	err = 0;
 
@@ -63,7 +63,8 @@ image_dequant_weighted(struct image *original, struct imagef **processed, float 
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
-			steps[i][j] = image_quant_weights[i][j] * step;
+			steps[i][j] = image_quant_weights[i][j] * step *
+			              (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
 	image_do_dequant(original, *processed, steps);
 	err = 0;
 
@@ -110,7 +111,7 @@ image_quant_unif(struct imagef *original, struct image **processed, float step)
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
-			steps[i][j] = step;
+			steps[i][j] = step * (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
 	image_do_quant(original, *processed, steps);
 	err = 0;
 
@@ -133,7 +134,8 @@ image_quant_weighted(struct imagef *original, struct image **processed, float st
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
-			steps[i][j] = image_quant_weights[i][j] * step;
+			steps[i][j] = image_quant_weights[i][j] * step *
+			              (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
 	image_do_quant(original, *processed, steps);
 	err = 0;
 
