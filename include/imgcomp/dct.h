@@ -7,7 +7,7 @@
 #ifndef IMGCOMP_DCT_H
 #define IMGCOMP_DCT_H
 
-int image_fdct(struct image *original, struct image **processed);
-int image_idct(struct image *original, struct image **processed);
+int image_fdct(struct image *original, struct imagef **processed);
+int image_idct(struct imagef *original, struct image **processed);
 
 #endif /* IMGCOMP_DCT_H */

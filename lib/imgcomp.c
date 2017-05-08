@@ -54,18 +54,19 @@ int
 imagefile_compress(int infd, int outfd)
 {
 	int err;
-	struct image *img1, *img2;
+	struct image *img1;
+	struct imagef *img2;
 
 	if ((err = imagefile_read(infd, IMGDEPTH, &img1)) < 0)
 		goto out;
 	if ((err = image_fdct(img1, &img2)) < 0)
 		goto out_free_img1;
-	if ((err = imagefile_write(outfd, img2)) < 0)
+	if ((err = imagefile_writef(outfd, img2)) < 0)
 		goto out_free_img2;
 	err = 0;
 
 out_free_img2:
-	image_free(img2);
+	image_freef(img2);
 out_free_img1:
 	image_free(img1);
 out:
@@ -76,10 +77,10 @@ int
 imagefile_decompress(int infd, int outfd)
 {
 	int err;
-	struct image *img1, *img2;
+	struct imagef *img1;
+	struct image *img2;
 
-	/* Make sure no processing is done to the bitstream when reading the file. */
-	if ((err = imagefile_read(infd, IMAGE_MAXDEPTH, &img1)) < 0)
+	if ((err = imagefile_readf(infd, &img1)) < 0)
 		goto out;
 	if ((err = image_idct(img1, &img2)) < 0)
 		goto out_free_img1;
@@ -92,7 +93,7 @@ imagefile_decompress(int infd, int outfd)
 out_free_img2:
 	image_free(img2);
 out_free_img1:
-	image_free(img1);
+	image_freef(img1);
 out:
 	return err;
 }

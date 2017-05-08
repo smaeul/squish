@@ -21,7 +21,7 @@
 #define DCT_SIZE 8
 
 int
-image_fdct(struct image *original, struct image **processed)
+image_fdct(struct image *original, struct imagef **processed)
 {
 	int err;
 
@@ -30,7 +30,7 @@ image_fdct(struct image *original, struct image **processed)
 	if (original->width % DCT_SIZE || original->height % DCT_SIZE)
 		return ERR_NOTSUP;
 
-	if ((err = image_alloc(processed, original->width, original->height, IMAGE_MAXDEPTH)) < 0)
+	if ((err = image_allocf(processed, original->width, original->height)) < 0)
 		goto out;
 	/* Iterate over each block (rows/columns). */
 	for (size_t a = 0; a < original->height; a += DCT_SIZE) {
@@ -50,7 +50,7 @@ image_fdct(struct image *original, struct image **processed)
 						}
 					}
 					sum *= (2.0 / DCT_SIZE) * C(k) * C(l);
-					pixelf(*processed, a + k, b + l) = sum;
+					pixel(*processed, a + k, b + l) = sum;
 				}
 			}
 		}
@@ -62,7 +62,7 @@ out:
 }
 
 int
-image_idct(struct image *original, struct image **processed)
+image_idct(struct imagef *original, struct image **processed)
 {
 	int err;
 
@@ -87,7 +87,7 @@ image_idct(struct image *original, struct image **processed)
 							double cosx = cos((2 * m + 1) * k * M_PI / (2.0 * DCT_SIZE));
 							double cosy = cos((2 * n + 1) * l * M_PI / (2.0 * DCT_SIZE));
 
-							sum += cosx * cosy * pixelf(original, a + k, b + l) * C(k) * C(l);
+							sum += cosx * cosy * pixel(original, a + k, b + l) * C(k) * C(l);
 						}
 					}
 					sum *= 2.0 / DCT_SIZE;
