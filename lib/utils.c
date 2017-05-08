@@ -7,21 +7,23 @@
 #include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <imgcomp/imgcomp.h>
 
 int
-readall(int fd, uint8_t *buffer, size_t size)
+readall(int fd, void *buffer, size_t size)
 {
 	size_t finished = 0;
 	ssize_t current;
+	uint8_t *bytebuf = buffer;
 
 	if (!buffer || !size)
 		return ERR_NULL;
 
 	while (finished < size) {
-		if ((current = read(fd, buffer + finished, size - finished)) < 0) {
+		if ((current = read(fd, bytebuf + finished, size - finished)) < 0) {
 			/* Always retry if interrupted; never retry after other errors. */
 			if (errno != EINTR)
 				return -errno;
@@ -37,16 +39,17 @@ readall(int fd, uint8_t *buffer, size_t size)
 }
 
 int
-writeall(int fd, uint8_t *buffer, size_t size)
+writeall(int fd, void *buffer, size_t size)
 {
 	size_t finished = 0;
 	ssize_t current;
+	uint8_t *bytebuf = buffer;
 
 	if (!buffer || !size)
 		return ERR_NULL;
 
 	while (finished < size) {
-		if ((current = write(fd, buffer + finished, size - finished)) < 0) {
+		if ((current = write(fd, bytebuf + finished, size - finished)) < 0) {
 			/* Always retry if interrupted; never retry after other errors. */
 			if (errno != EINTR)
 				return -errno;
