@@ -14,6 +14,9 @@
 #include <imgcomp/statistics.h>
 #include <imgcomp/utils.h>
 
+/* Requires square blocks. */
+#define BLOCKSIZE 8
+
 int imagefile_compare(int origfd, int procfd, struct image_stats *stats);
 int imagefile_compress(int infd, int outfd);
 int imagefile_decompress(int infd, int outfd);
