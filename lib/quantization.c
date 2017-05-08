@@ -38,7 +38,7 @@ image_dequant_unif(struct image *original, struct imagef **processed, float step
 	if (!step)
 		return ERR_INVAL;
 
-	if ((err = image_allocf(processed, original->width, original->height)) < 0)
+	if ((err = image_allocf(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
@@ -61,7 +61,7 @@ image_dequant_weighted(struct image *original, struct imagef **processed, float 
 	if (!step)
 		return ERR_INVAL;
 
-	if ((err = image_allocf(processed, original->width, original->height)) < 0)
+	if ((err = image_allocf(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
@@ -108,7 +108,7 @@ image_quant_unif(struct imagef *original, struct image **processed, float step)
 	if (!step)
 		return ERR_INVAL;
 
-	if ((err = image_alloc(processed, original->width, original->height, IMAGE_MAXDEPTH)) < 0)
+	if ((err = image_alloc(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
@@ -131,7 +131,7 @@ image_quant_weighted(struct imagef *original, struct image **processed, float st
 	if (!step)
 		return ERR_INVAL;
 
-	if ((err = image_alloc(processed, original->width, original->height, IMAGE_MAXDEPTH)) < 0)
+	if ((err = image_alloc(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)

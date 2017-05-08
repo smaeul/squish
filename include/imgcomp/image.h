@@ -33,9 +33,9 @@ int image_alloc(struct image **img, size_t width, size_t height, size_t depth);
 void image_free(struct image *img);
 
 static inline int
-image_allocf(struct imagef **img, size_t width, size_t height)
+image_allocf(struct imagef **img, size_t width, size_t height, size_t depth)
 {
-	return image_alloc((struct image **) img, width, height, IMAGE_MAXDEPTH);
+	return image_alloc((struct image **) img, width, height, depth);
 }
 
 static inline void

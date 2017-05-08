@@ -27,7 +27,7 @@ image_fdct(struct image *original, struct imagef **processed)
 	if (original->width % BLOCKSIZE || original->height % BLOCKSIZE)
 		return ERR_NOTSUP;
 
-	if ((err = image_allocf(processed, original->width, original->height)) < 0)
+	if ((err = image_allocf(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
 	/* Iterate over each block (rows/columns). */
 	for (size_t a = 0; a < original->height; a += BLOCKSIZE) {
