@@ -51,17 +51,23 @@ int
 imagefile_compress(int infd, int outfd)
 {
 	int err;
-	struct image *img1;
+	struct image *img1, *img3;
 	struct imagef *img2;
 
 	if ((err = imagefile_read(infd, TEST_DEPTH, &img1)) < 0)
 		goto out;
 	if ((err = image_fdct(img1, &img2)) < 0)
 		goto out_free_img1;
-	if ((err = imagefile_writef(outfd, img2)) < 0)
+	if ((err = image_quant_weighted(img2, &img3, 1)) < 0)
 		goto out_free_img2;
+	/* Use the full bit depth when writing out the image. */
+	img3->depth = IMAGE_MAXDEPTH;
+	if ((err = imagefile_write_raw(outfd, img3)) < 0)
+		goto out_free_img3;
 	err = 0;
 
+out_free_img3:
+	image_free(img3);
 out_free_img2:
 	image_freef(img2);
 out_free_img1:
@@ -74,23 +80,27 @@ int
 imagefile_decompress(int infd, int outfd)
 {
 	int err;
-	struct imagef *img1;
-	struct image *img2;
+	struct image *img1, *img3;
+	struct imagef *img2;
 
-	if ((err = imagefile_readf(infd, &img1)) < 0)
+	if ((err = imagefile_read_raw(infd, IMAGE_MAXDEPTH, &img1)) < 0)
 		goto out;
-	if ((err = image_idct(img1, &img2)) < 0)
+	/* Use the expected bit depth when processing the image. */
+	img1->depth = TEST_DEPTH;
+	if ((err = image_dequant_weighted(img1, &img2, 1)) < 0)
 		goto out_free_img1;
-	/* Use the expected bit depth when writing out the image. */
-	img2->depth = TEST_DEPTH;
-	if ((err = imagefile_write(outfd, img2)) < 0)
+	if ((err = image_idct(img2, &img3)) < 0)
 		goto out_free_img2;
+	if ((err = imagefile_write(outfd, img3)) < 0)
+		goto out_free_img3;
 	err = 0;
 
+out_free_img3:
+	image_free(img3);
 out_free_img2:
-	image_free(img2);
+	image_freef(img2);
 out_free_img1:
-	image_freef(img1);
+	image_free(img1);
 out:
 	return err;
 }
