@@ -30,13 +30,13 @@ int imagefile_write(int fd, struct image *img);
 static inline int
 imagefile_readf(int fd, struct imagef **img)
 {
-	return imagefile_read(fd, IMAGE_MAXDEPTH, (struct image **)img);
+	return imagefile_read(fd, IMAGE_MAXDEPTH, (struct image **) img);
 }
 
 static inline int
 imagefile_writef(int fd, struct imagef *img)
 {
-	return imagefile_write(fd, (struct image *)img);
+	return imagefile_write(fd, (struct image *) img);
 }
 
 #endif /* IMGCOMP_IMGCOMP_H */
