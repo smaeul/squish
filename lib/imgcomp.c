@@ -99,6 +99,40 @@ int
 imagefile_read(int fd, size_t depth, struct image **img)
 {
 	int err;
+	uint32_t *buffer;
+	struct image *newimg;
+
+	if ((err = imagefile_read_raw(fd, depth, img)) < 0)
+		goto out;
+	/* Expand data to fill the buffer. Assumes little-endian. */
+	newimg = *img;
+	if (depth < IMAGE_MAXDEPTH) {
+		uint8_t *buffer = (uint8_t *) newimg->data;
+
+		/* Treat the first pixel separately, since memcpy cannot overlap. */
+		for (size_t i = newimg->bytes - 1; i > 0; i -= 1) {
+			/* We must overwrite the padding bytes anyway, so copy all four bytes first. */
+			memcpy(buffer + IMAGE_MAXDEPTH * (i + 1) - depth, buffer + depth * i, depth);
+			/* Fill in remaining bytes with a copy of the LSB for better rounding. */
+			memset(buffer + IMAGE_MAXDEPTH * i, buffer[depth * i], IMAGE_MAXDEPTH - depth);
+		}
+		memmove(buffer + IMAGE_MAXDEPTH - depth, buffer, depth);
+		memset(buffer, buffer[IMAGE_MAXDEPTH - depth], IMAGE_MAXDEPTH - depth);
+	}
+	/* Translate unsigned integers to signed integer range. */
+	buffer = (uint32_t *) newimg->data;
+	for (size_t i = 0; i < newimg->height * newimg->width; i += 1)
+		buffer[i] = buffer[i] ^ INT32_MIN;
+	err = 0;
+
+out:
+	return err;
+}
+
+int
+imagefile_read_raw(int fd, size_t depth, struct image **img)
+{
+	int err;
 	struct image *newimg;
 
 	if (!img)
@@ -112,20 +146,6 @@ imagefile_read(int fd, size_t depth, struct image **img)
 		image_free(newimg);
 		goto out;
 	}
-	/* Expand data to fill the buffer. Assumes little-endian. */
-	if (depth < IMAGE_MAXDEPTH) {
-		uint8_t *buffer = (uint8_t *) newimg->data;
-
-		/* Treat the first pixel separately, since memcpy cannot overlap. */
-		for (size_t i = newimg->bytes - 1; i > 0; i -= 1) {
-			/* We must overwrite the padding bytes anyway, so copy all four bytes first. */
-			memcpy(buffer + IMAGE_MAXDEPTH * (i + 1) - depth, buffer + depth * i, depth);
-			/* Fill in remaining bytes with a copy of the LSB for better rounding. */
-			memset(buffer + IMAGE_MAXDEPTH * i, buffer[depth * i], IMAGE_MAXDEPTH - depth);
-		}
-		newimg->data[0] <<= (IMAGE_MAXDEPTH - depth) * CHAR_BIT;
-		memset(buffer, buffer[IMAGE_MAXDEPTH - depth], IMAGE_MAXDEPTH - depth);
-	}
 	*img = newimg;
 	err = 0;
 
@@ -135,6 +155,27 @@ out:
 
 int
 imagefile_write(int fd, struct image *img)
+{
+	int err;
+	uint32_t *buffer;
+
+	if (!img)
+		return ERR_NULL;
+
+	/* Translate signed integers back to unsigned integers. */
+	buffer = (uint32_t *) img->data;
+	for (size_t i = 0; i < img->height * img->width; i += 1)
+		buffer[i] = buffer[i] ^ INT32_MIN;
+	if ((err = imagefile_write_raw(fd, img)) < 0)
+		goto out;
+	err = 0;
+
+out:
+	return err;
+}
+
+int
+imagefile_write_raw(int fd, struct image *img)
 {
 	int err;
 	uint8_t *buffer;

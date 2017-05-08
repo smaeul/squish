@@ -16,7 +16,7 @@ struct image {
 	size_t height;   /**< The height of the image in pixels. */
 	size_t depth;    /**< The number of bytes used per pixel in the file. */
 	size_t bytes;    /**< The length of the image file in bytes. */
-	uint32_t data[]; /**< The stream of bytes representing the image. */
+	int32_t data[]; /**< The stream of bytes representing the image. */
 };
 
 struct imagef {
