@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <imgcomp/imgcomp.h>
 
@@ -25,9 +26,9 @@ imagefile_compare(int origfd, int procfd, struct image_stats *stats)
 	if (!stats)
 		return ERR_NULL;
 
-	if ((err = imagefile_read(origfd, &original)) < 0)
+	if ((err = imagefile_read(origfd, IMGDEPTH, &original)) < 0)
 		goto out;
-	if ((err = imagefile_read(procfd, &processed)) < 0)
+	if ((err = imagefile_read(procfd, IMGDEPTH, &processed)) < 0)
 		goto out_free_original;
 	if ((mse = image_mse(original, processed)) < 0) {
 		err = mse;
@@ -55,7 +56,7 @@ imagefile_compress(int infd, int outfd)
 	int err;
 	struct image *img;
 
-	if ((err = imagefile_read(infd, &img)) < 0)
+	if ((err = imagefile_read(infd, IMGDEPTH, &img)) < 0)
 		goto out;
 	if ((err = imagefile_write(outfd, img)) < 0)
 		goto out_free_img;
@@ -73,7 +74,7 @@ imagefile_decompress(int infd, int outfd)
 	int err;
 	struct image *img;
 
-	if ((err = imagefile_read(infd, &img)) < 0)
+	if ((err = imagefile_read(infd, IMGDEPTH, &img)) < 0)
 		goto out;
 	if ((err = imagefile_write(outfd, img)) < 0)
 		goto out_free_img;
@@ -86,18 +87,35 @@ out:
 }
 
 int
-imagefile_read(int fd, struct image **img)
+imagefile_read(int fd, size_t depth, struct image **img)
 {
 	int err;
+	struct image *newimg;
 
 	if (!img)
 		return ERR_NULL;
-	if ((err = image_alloc(img, IMGSIZE, IMGSIZE, IMGDEPTH)) < 0)
+	if (!depth || depth > IMAGE_MAXDEPTH)
+		return ERR_INVAL;
+
+	if ((err = image_alloc(&newimg, IMGSIZE, IMGSIZE, depth)) < 0)
 		goto out;
-	if ((err = readall(fd, (*img)->data, (*img)->bytes)) < 0) {
-		image_free(*img);
+	if ((err = readall(fd, newimg->data, newimg->bytes)) < 0) {
+		image_free(newimg);
 		goto out;
 	}
+	/* Expand data to fill the buffer. Assumes little-endian. */
+	if (depth < IMAGE_MAXDEPTH) {
+		uint8_t *buffer = (uint8_t *) newimg->data;
+
+		/* Treat the first pixel separately, since memcpy cannot overlap. */
+		for (size_t i = newimg->bytes - 1; i > 0; i -= 1) {
+			/* We must clear the padding bytes anyway, so copy all four bytes first. */
+			memcpy(buffer + IMAGE_MAXDEPTH * (i + 1) - depth, buffer + depth * i, depth);
+			memset(buffer + IMAGE_MAXDEPTH * i, 0, IMAGE_MAXDEPTH - depth);
+		}
+		newimg->data[0] <<= (IMAGE_MAXDEPTH - depth) * CHAR_BIT;
+	}
+	*img = newimg;
 	err = 0;
 
 out:
@@ -108,11 +126,16 @@ int
 imagefile_write(int fd, struct image *img)
 {
 	int err;
+	uint8_t *buffer;
 
 	if (!img)
 		return ERR_NULL;
-	if ((err = writeall(fd, img->data, img->bytes)) < 0)
-		goto out;
+
+	/* Write out the significant bytes for each pixel. Assumes little-endian. */
+	buffer = (uint8_t *) img->data;
+	for (size_t i = 0; i < img->height * img->width; i += 1)
+		if ((err = writeall(fd, buffer + IMAGE_MAXDEPTH * (i + 1) - img->depth, img->depth)) < 0)
+			goto out;
 	err = 0;
 
 out:
