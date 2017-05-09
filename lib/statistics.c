@@ -24,11 +24,14 @@ image_mse(struct image *original, struct image *processed)
 		return ERR_INVAL;
 
 	mse = 0;
-	for (size_t i = 0; i < original->height; i += 1)
-		for (size_t j = 0; j < original->width; j += 1)
-			mse += pow((pixel(original, i, j) - pixel(processed, i, j)) >>
-			               (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT,
-			           2);
+	for (size_t i = 0; i < original->height; i += 1) {
+		for (size_t j = 0; j < original->width; j += 1) {
+			/* Only compare the appropriate number of bytes (not interpolated extension). */
+			int32_t opx = pixel(original, i, j) >> (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT;
+			int32_t ppx = pixel(processed, i, j) >> (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT;
+			mse += pow(opx - ppx, 2);
+		}
+	}
 	mse /= original->height * original->width;
 
 	return mse;
@@ -47,7 +50,7 @@ image_psnr(struct image *original, struct image *processed)
 	if ((mse = image_mse(original, processed)) < 0)
 		return mse;
 	if (mse > 0) {
-		maxval = 1UL << (original->depth * CHAR_BIT);
+		maxval = (1UL << (original->depth * CHAR_BIT)) - 1;
 		psnr = 10 * log10(pow(maxval, 2) / mse);
 	} else {
 		psnr = 99;
