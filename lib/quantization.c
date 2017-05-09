@@ -13,7 +13,7 @@
 
 #include <imgcomp/imgcomp.h>
 
-float image_quant_weights[BLOCKSIZE][BLOCKSIZE] = {
+static float weights[BLOCKSIZE][BLOCKSIZE] = {
 	{ 16, 11, 10, 16, 24, 40, 41, 61 },     { 12, 12, 14, 19, 26, 58, 60, 55 },
 	{ 14, 13, 16, 24, 40, 57, 69, 56 },     { 14, 17, 22, 29, 51, 87, 80, 62 },
 	{ 18, 22, 37, 56, 68, 109, 103, 77 },   { 24, 35, 55, 64, 81, 104, 113, 92 },
@@ -63,8 +63,8 @@ image_dequant_weighted(struct image *original, struct imagef **processed, float 
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
-			steps[i][j] = image_quant_weights[i][j] * step *
-			              (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
+			steps[i][j] =
+			    weights[i][j] * step * (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
 	image_do_dequant(original, *processed, steps);
 	err = 0;
 
@@ -136,8 +136,8 @@ image_quant_weighted(struct imagef *original, struct image **processed, float st
 		goto out;
 	for (size_t i = 0; i < BLOCKSIZE; i += 1)
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
-			steps[i][j] = image_quant_weights[i][j] * step *
-			              (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
+			steps[i][j] =
+			    weights[i][j] * step * (1 << (IMAGE_MAXDEPTH - original->depth) * CHAR_BIT);
 	image_do_quant(original, *processed, steps);
 	err = 0;
 
