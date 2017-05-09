@@ -51,7 +51,7 @@ int
 imagefile_compress(int infd, int outfd)
 {
 	int err;
-	struct image *img1, *img3;
+	struct image *img1, *img3, *img4;
 	struct imagef *img2;
 
 	if ((err = imagefile_read(infd, TEST_DEPTH, &img1)) < 0)
@@ -60,12 +60,16 @@ imagefile_compress(int infd, int outfd)
 		goto out_free_img1;
 	if ((err = image_quant_weighted(img2, &img3, 1)) < 0)
 		goto out_free_img2;
-	/* Use the full bit depth when writing out the image. */
-	img3->depth = IMAGE_MAXDEPTH;
-	if ((err = imagefile_write_raw(outfd, img3)) < 0)
+	if ((err = image_fzigzag(img3, &img4)) < 0)
 		goto out_free_img3;
+	/* Use the full bit depth when writing out the image. */
+	img4->depth = IMAGE_MAXDEPTH;
+	if ((err = imagefile_write_raw(outfd, img4)) < 0)
+		goto out_free_img4;
 	err = 0;
 
+out_free_img4:
+	image_free(img4);
 out_free_img3:
 	image_free(img3);
 out_free_img2:
@@ -80,25 +84,29 @@ int
 imagefile_decompress(int infd, int outfd)
 {
 	int err;
-	struct image *img1, *img3;
-	struct imagef *img2;
+	struct image *img1, *img2, *img4;
+	struct imagef *img3;
 
 	if ((err = imagefile_read_raw(infd, IMAGE_MAXDEPTH, &img1)) < 0)
 		goto out;
 	/* Use the expected bit depth when processing the image. */
 	img1->depth = TEST_DEPTH;
-	if ((err = image_dequant_weighted(img1, &img2, 1)) < 0)
+	if ((err = image_izigzag(img1, &img2)) < 0)
 		goto out_free_img1;
-	if ((err = image_idct(img2, &img3)) < 0)
+	if ((err = image_dequant_weighted(img2, &img3, 1)) < 0)
 		goto out_free_img2;
-	if ((err = imagefile_write(outfd, img3)) < 0)
+	if ((err = image_idct(img3, &img4)) < 0)
 		goto out_free_img3;
+	if ((err = imagefile_write(outfd, img4)) < 0)
+		goto out_free_img4;
 	err = 0;
 
+out_free_img4:
+	image_free(img4);
 out_free_img3:
-	image_free(img3);
+	image_freef(img3);
 out_free_img2:
-	image_freef(img2);
+	image_free(img2);
 out_free_img1:
 	image_free(img1);
 out:

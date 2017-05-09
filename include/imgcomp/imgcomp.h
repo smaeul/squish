@@ -15,6 +15,7 @@
 #include <imgcomp/quantization.h>
 #include <imgcomp/statistics.h>
 #include <imgcomp/utils.h>
+#include <imgcomp/zigzag.h>
 
 /* Requires square blocks. */
 #define BLOCKSIZE 8
