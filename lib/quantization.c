@@ -82,7 +82,7 @@ image_do_dequant(struct image *original, struct imagef *processed, float steps[]
 			for (size_t i = 0; i < BLOCKSIZE; i += 1)
 				for (size_t j = 0; j < BLOCKSIZE; j += 1)
 					pixel(processed, a + i, b + j) =
-					    roundf(pixel(original, a + i, b + j) * steps[i][j]);
+					    pixel(original, a + i, b + j) * steps[i][j];
 }
 
 static void
