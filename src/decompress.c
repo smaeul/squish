@@ -29,7 +29,7 @@ main(int argc, char *argv[])
 		perror("Cannot open input file");
 		goto out;
 	}
-	if ((outfd = open(outfile, O_WRONLY | O_CREAT, 0666)) < 0) {
+	if ((outfd = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0) {
 		perror("Cannot open output file");
 		goto out_close_infd;
 	}
