@@ -21,9 +21,9 @@ image_fdct(struct image *original, struct imagef **processed)
 	int err;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (original->width % BLOCKSIZE || original->height % BLOCKSIZE)
-		return ERR_NOTSUP;
+		return -ENOTSUP;
 
 	if ((err = image_allocf(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
@@ -62,9 +62,9 @@ image_idct(struct imagef *original, struct image **processed)
 	int err;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (original->width % BLOCKSIZE || original->height % BLOCKSIZE)
-		return ERR_NOTSUP;
+		return -ENOTSUP;
 
 	if ((err = image_alloc(processed, original->width, original->height, TEST_DEPTH)) < 0)
 		goto out;

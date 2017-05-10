@@ -32,9 +32,9 @@ image_fzigzag(struct image *original, struct image **processed)
 	int32_t dc;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (original->width % BLOCKSIZE || original->height % BLOCKSIZE)
-		return ERR_NOTSUP;
+		return -ENOTSUP;
 
 	if ((err = image_alloc(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
@@ -67,9 +67,9 @@ image_izigzag(struct image *original, struct image **processed)
 	int32_t dc;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (original->width % BLOCKSIZE || original->height % BLOCKSIZE)
-		return ERR_NOTSUP;
+		return -ENOTSUP;
 
 	if ((err = image_alloc(processed, original->width, original->height, original->depth)) < 0)
 		goto out;

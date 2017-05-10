@@ -32,9 +32,9 @@ image_dequant_unif(struct image *original, struct imagef **processed, float step
 	int err;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (!step)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if ((err = image_allocf(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
@@ -55,9 +55,9 @@ image_dequant_weighted(struct image *original, struct imagef **processed, float 
 	int err;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (!step)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if ((err = image_allocf(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
@@ -105,9 +105,9 @@ image_quant_unif(struct imagef *original, struct image **processed, float step)
 	int err;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (!step)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if ((err = image_alloc(processed, original->width, original->height, original->depth)) < 0)
 		goto out;
@@ -128,9 +128,9 @@ image_quant_weighted(struct imagef *original, struct image **processed, float st
 	int err;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (!step)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if ((err = image_alloc(processed, original->width, original->height, original->depth)) < 0)
 		goto out;

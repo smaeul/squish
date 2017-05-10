@@ -19,9 +19,9 @@ image_mse(struct image *original, struct image *processed)
 	double mse;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (original->height != processed->height || original->width != processed->width)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	mse = 0;
 	for (size_t i = 0; i < original->height; i += 1) {
@@ -43,9 +43,9 @@ image_psnr(struct image *original, struct image *processed)
 	double maxval, mse, psnr;
 
 	if (!original || !processed)
-		return ERR_NULL;
+		return -EFAULT;
 	if (original->height != processed->height || original->width != processed->width)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if ((mse = image_mse(original, processed)) < 0)
 		return mse;

@@ -7,7 +7,6 @@
 #ifndef IMGCOMP_IMGCOMP_H
 #define IMGCOMP_IMGCOMP_H
 
-#include <imgcomp/error.h>
 #include <imgcomp/image.h>
 
 #include <imgcomp/dct.h>

@@ -17,9 +17,9 @@ int
 image_dump_block(struct image *img, size_t row, size_t col)
 {
 	if (!img)
-		return ERR_NULL;
+		return -EFAULT;
 	if (row >= img->height / BLOCKSIZE || col >= img->width / BLOCKSIZE)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	for (size_t i = 0; i < BLOCKSIZE; i += 1) {
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)
@@ -34,9 +34,9 @@ int
 imagef_dump_block(struct imagef *img, size_t row, size_t col)
 {
 	if (!img)
-		return ERR_NULL;
+		return -EFAULT;
 	if (row >= img->height / BLOCKSIZE || col >= img->width / BLOCKSIZE)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	for (size_t i = 0; i < BLOCKSIZE; i += 1) {
 		for (size_t j = 0; j < BLOCKSIZE; j += 1)

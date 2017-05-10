@@ -20,7 +20,7 @@ readall(int fd, void *buffer, size_t size)
 	uint8_t *bytebuf = buffer;
 
 	if (!buffer || !size)
-		return ERR_NULL;
+		return -EFAULT;
 
 	while (finished < size) {
 		if ((current = read(fd, bytebuf + finished, size - finished)) < 0) {
@@ -28,7 +28,7 @@ readall(int fd, void *buffer, size_t size)
 			if (errno != EINTR)
 				return -errno;
 		} else if (current == 0) {
-			return ERR_NODATA;
+			return -EBADF;
 		} else {
 			/* Add this round to the total if it actually represents a number of bytes. */
 			finished += current;
@@ -46,7 +46,7 @@ writeall(int fd, void *buffer, size_t size)
 	uint8_t *bytebuf = buffer;
 
 	if (!buffer || !size)
-		return ERR_NULL;
+		return -EFAULT;
 
 	while (finished < size) {
 		if ((current = write(fd, bytebuf + finished, size - finished)) < 0) {
@@ -54,7 +54,7 @@ writeall(int fd, void *buffer, size_t size)
 			if (errno != EINTR)
 				return -errno;
 		} else if (current == 0) {
-			return ERR_NODATA;
+			return -EBADF;
 		} else {
 			/* Add this round to the total if it actually represents a number of bytes. */
 			finished += current;

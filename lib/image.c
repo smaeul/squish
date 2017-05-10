@@ -18,14 +18,14 @@ image_alloc(struct image **img, size_t width, size_t height, size_t depth)
 	struct image *newimg;
 
 	if (!img)
-		return ERR_NULL;
+		return -EFAULT;
 	if (height >= SIZE_MAX / width || depth >= SIZE_MAX / (width * height))
-		return ERR_INVAL;
+		return -EINVAL;
 	if (depth > IMAGE_MAXDEPTH)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if (!(newimg = calloc(sizeof(struct image) + width * height * IMAGE_MAXDEPTH, 1)))
-		return ERR_ALLOC;
+		return -ENOMEM;
 	newimg->width = width;
 	newimg->height = height;
 	newimg->depth = depth;

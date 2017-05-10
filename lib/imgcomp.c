@@ -21,7 +21,7 @@ imagefile_compare(int origfd, int procfd, struct image_stats *stats)
 	struct image *original, *processed;
 
 	if (!stats)
-		return ERR_NULL;
+		return -EFAULT;
 
 	if ((err = imagefile_read(origfd, TEST_DEPTH, &original)) < 0)
 		goto out;
@@ -154,9 +154,9 @@ imagefile_read_raw(int fd, size_t depth, struct image **img)
 	struct image *newimg;
 
 	if (!img)
-		return ERR_NULL;
+		return -EFAULT;
 	if (!depth || depth > IMAGE_MAXDEPTH)
-		return ERR_INVAL;
+		return -EINVAL;
 
 	if ((err = image_alloc(&newimg, TEST_SIZE, TEST_SIZE, depth)) < 0)
 		goto out;
@@ -178,7 +178,7 @@ imagefile_write(int fd, struct image *img)
 	uint32_t *buffer;
 
 	if (!img)
-		return ERR_NULL;
+		return -EFAULT;
 
 	/* Translate signed integers back to unsigned integers. */
 	buffer = (uint32_t *) img->data;
@@ -199,7 +199,7 @@ imagefile_write_raw(int fd, struct image *img)
 	uint8_t *buffer;
 
 	if (!img)
-		return ERR_NULL;
+		return -EFAULT;
 
 	/* Write out the significant bytes for each pixel. Assumes little-endian. */
 	buffer = (uint8_t *) img->data;
