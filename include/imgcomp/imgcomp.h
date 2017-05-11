@@ -16,7 +16,7 @@
 #include <imgcomp/utils.h>
 #include <imgcomp/zigzag.h>
 
-/* Requires square blocks. */
+#define BLOCKPIXELS (BLOCKSIZE * BLOCKSIZE)
 #define BLOCKSIZE 8
 
 /* Properties of the images used for testing (since they have no header). */

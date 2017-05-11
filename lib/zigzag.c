@@ -10,13 +10,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <stdio.h>
-
 #include <imgcomp/imgcomp.h>
 
 #define blockstart(image, row, col)                                                                \
-	(((row) / BLOCKSIZE * ((image)->width / BLOCKSIZE) + (col) / BLOCKSIZE) *                      \
-	 (BLOCKSIZE * BLOCKSIZE))
+	(((row) / BLOCKSIZE * ((image)->width / BLOCKSIZE) + (col) / BLOCKSIZE) * (BLOCKPIXELS))
 
 static int offsets[BLOCKSIZE][BLOCKSIZE] = {
 	{ 0, 1, 5, 6, 14, 15, 27, 28 },     { 2, 4, 7, 13, 16, 26, 29, 42 },
