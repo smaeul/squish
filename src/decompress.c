@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <imgcomp/imgcomp.h>
@@ -16,15 +17,19 @@ int
 main(int argc, char *argv[])
 {
 	char *infile, *outfile;
+	float step = 1;
 	int err = 111, infd, outfd;
 
-	if (argc != 3) {
-		fprintf(stderr, "Usage: %s <input> <output>\n", argv[0]);
+	if (argc < 3 || argc > 4) {
+		fprintf(stderr, "Usage: %s <input> <output> [stepsize]\n", argv[0]);
 		return 100;
 	}
 
 	infile = argv[1];
 	outfile = argv[2];
+	if (argc == 4)
+		step = strtof(argv[3], 0);
+
 	if ((infd = open(infile, O_RDONLY)) < 0) {
 		perror("Cannot open input file");
 		goto out;
@@ -35,7 +40,7 @@ main(int argc, char *argv[])
 	}
 
 	printf("Decompressing %s to %s\n", infile, outfile);
-	if ((err = -imagefile_decompress(infd, outfd)) > 0)
+	if ((err = -imagefile_decompress(infd, outfd, step)) > 0)
 		goto out_close_outfd;
 	printf("Successfully read a %zu byte image\n", totalread);
 

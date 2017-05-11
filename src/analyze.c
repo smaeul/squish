@@ -20,16 +20,20 @@ int
 main(int argc, char *argv[])
 {
 	char *infile, *tmpfile = strdup("/tmp/image.XXXXXX");
+	float step = 1;
 	int childerr = 0, err = 111, infd, pipefd[2], tmpfd, wstat = -1;
 	pid_t compressor, decompressor;
 	struct image_stats stats;
 
-	if (argc != 2) {
-		fprintf(stderr, "Usage: %s <image>\n", argv[0]);
+	if (argc < 2 || argc > 3) {
+		fprintf(stderr, "Usage: %s <image> [stepsize]\n", argv[0]);
 		return 100;
 	}
 
 	infile = argv[1];
+	if (argc == 3)
+		step = strtof(argv[2], 0);
+
 	if ((infd = open(infile, O_RDONLY)) < 0) {
 		perror("Cannot open input file");
 		goto out;
@@ -53,7 +57,7 @@ main(int argc, char *argv[])
 		goto out_close_tmpfd;
 	} else if (compressor == 0) {
 		/* Compressor child */
-		err = -imagefile_compress(infd, pipefd[1]);
+		err = -imagefile_compress(infd, pipefd[1], step);
 		/* TODO: time compression. */
 		goto out_close_tmpfd;
 	}
@@ -62,7 +66,7 @@ main(int argc, char *argv[])
 		goto out_close_tmpfd;
 	} else if (decompressor == 0) {
 		/* Decompressor child */
-		err = -imagefile_decompress(pipefd[0], tmpfd);
+		err = -imagefile_decompress(pipefd[0], tmpfd, step);
 		/* TODO: time decompression. */
 		goto out_close_tmpfd;
 	}

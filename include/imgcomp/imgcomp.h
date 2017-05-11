@@ -25,8 +25,8 @@
 #define TEST_SIZE 512
 
 int imagefile_compare(int origfd, int procfd, struct image_stats *stats);
-int imagefile_compress(int infd, int outfd);
-int imagefile_decompress(int infd, int outfd);
+int imagefile_compress(int infd, int outfd, float step);
+int imagefile_decompress(int infd, int outfd, float step);
 int imagefile_read(int fd, size_t depth, struct image **img);
 int imagefile_read_raw(int fd, size_t depth, struct image **img);
 int imagefile_write(int fd, struct image *img);

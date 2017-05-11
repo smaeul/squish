@@ -48,7 +48,7 @@ out:
 }
 
 int
-imagefile_compress(int infd, int outfd)
+imagefile_compress(int infd, int outfd, float step)
 {
 	int err;
 	struct image *img1, *img3, *img4;
@@ -58,7 +58,7 @@ imagefile_compress(int infd, int outfd)
 		goto out;
 	if ((err = image_fdct(img1, &img2)) < 0)
 		goto out_free_img1;
-	if ((err = image_quant_weighted(img2, &img3, 1)) < 0)
+	if ((err = image_quant_weighted(img2, &img3, step)) < 0)
 		goto out_free_img2;
 	if ((err = image_fzigzag(img3, &img4)) < 0)
 		goto out_free_img3;
@@ -79,7 +79,7 @@ out:
 }
 
 int
-imagefile_decompress(int infd, int outfd)
+imagefile_decompress(int infd, int outfd, float step)
 {
 	int err;
 	struct image *img1, *img2, *img4;
@@ -89,7 +89,7 @@ imagefile_decompress(int infd, int outfd)
 		goto out;
 	if ((err = image_izigzag(img1, &img2)) < 0)
 		goto out_free_img1;
-	if ((err = image_dequant_weighted(img2, &img3, 1)) < 0)
+	if ((err = image_dequant_weighted(img2, &img3, step)) < 0)
 		goto out_free_img2;
 	if ((err = image_idct(img3, &img4)) < 0)
 		goto out_free_img3;
