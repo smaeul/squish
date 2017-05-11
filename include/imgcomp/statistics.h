@@ -12,7 +12,14 @@ struct image_stats {
 	double psnr; /**< The signal-to-noise ratio of the processed image. */
 };
 
+/*
+ * MSE = 1/(W*H)*ΣᵢΣⱼ(|Aᵢⱼ-Bᵢⱼ|²)
+ */
 double image_mse(struct image *original, struct image *processed);
+/*
+ * PSNR = 10*log₁₀(255²/MSE)
+ * if MSE = 0, then PSNR = 99dB
+ */
 double image_psnr(struct image *original, struct image *processed);
 
 #endif /* IMGCOMP_STATISTICS_H */
