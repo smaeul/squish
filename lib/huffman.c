@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <stdio.h>
-
 #include <imgcomp/imgcomp.h>
 
 #define addbits(bitstring, numbits, tail)                                                          \
@@ -90,7 +88,7 @@ imagefile_read_huffman(int fd, size_t depth, struct image **img)
 {
 	int err;
 	size_t block = 0;
-	uint32_t state = 0;
+	uint32_t state = 1;
 	struct image *newimg;
 
 	if (!img)
@@ -137,7 +135,7 @@ int
 imagefile_write_huffman(int fd, struct image *img)
 {
 	int err;
-	uint8_t state = 0;
+	uint8_t state = 1;
 
 	if (!img)
 		return -EFAULT;
