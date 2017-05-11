@@ -1,0 +1,3 @@
+JPEG-like image encoder and decoder
+Designed for 512x512 raw 8-bit grayscale images
+It would be extensible with a file header or more CLI parameters
