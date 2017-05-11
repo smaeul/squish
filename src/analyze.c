@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 		goto out_close_tmpfd;
 	}
 
-	printf("Analyzing compression performance using %s\n", infile);
+	printf("Analyzing compression performance of %s\n", infile);
 	if ((compressor = fork()) < 0) {
 		perror("Cannot fork compressor");
 		goto out_close_tmpfd;
@@ -106,8 +106,8 @@ main(int argc, char *argv[])
 	if ((err = -imagefile_compare(infd, tmpfd, &stats))) {
 		fprintf(stderr, "Comparison failed: %s\n", strerror(err));
 	} else {
-		printf("Mean squared error of processed image: %0.2f levels²/pixel²\n", stats.mse);
-		printf("pSNR of processed image: %0.2f dB\n", stats.psnr);
+		printf("Quantization Step  Mean Squared Error  Peak SNR (dB)\n");
+		printf("%17.2f  %18.2f  %13.2f\n", step, stats.mse, stats.psnr);
 	}
 
 out_close_tmpfd:
