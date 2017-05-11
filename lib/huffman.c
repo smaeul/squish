@@ -20,6 +20,7 @@
 		bitstring <<= numbits;                                                                     \
 		bitstring |= tail & ((1U << numbits) - 1);                                                 \
 	} while (0)
+#define array_size(a) (sizeof(a) / sizeof((a)[0]))
 #define min(a, b) (a < b ? a : b)
 
 static uint32_t huffman_ac[11][16] = {
@@ -50,6 +51,9 @@ static uint32_t huffman_dc[12] = { 0x001b, 0x000e, 0x0004, 0x0005, 0x000f, 0x000
 	                               0x0035, 0x0069, 0x01a0, 0x01a1, 0x01a2, 0x01a3 };
 
 static int flushbits(int fd, uint8_t *state);
+static int read_ac(int fd, uint32_t *state, uint8_t *acpixels, int32_t *ac);
+static int read_dc(int fd, uint32_t *state, int32_t *dc);
+static int readbits(int fd, uint32_t *state, uint16_t *out, uint8_t numbits);
 static int write_ac(int fd, uint8_t *state, uint8_t zeroes, int32_t value);
 static int write_dc(int fd, uint8_t *state, int32_t value);
 static int write_eob(int fd, uint8_t *state);
@@ -85,7 +89,8 @@ int
 imagefile_read_huffman(int fd, size_t depth, struct image **img)
 {
 	int err;
-	int16_t temp;
+	size_t block = 0;
+	uint32_t state = 0;
 	struct image *newimg;
 
 	if (!img)
@@ -95,14 +100,31 @@ imagefile_read_huffman(int fd, size_t depth, struct image **img)
 
 	if ((err = image_alloc(&newimg, TEST_SIZE, TEST_SIZE, depth)) < 0)
 		goto out;
-	/* Iterate over each symbol (same as number of pixels, though no longer in pixel order). */
-	for (size_t i = 0; i < newimg->height * newimg->width; i += 1) {
-		if ((err = readall(fd, &temp, 2)) < 0) {
-			image_free(newimg);
-			goto out;
+
+	while (block < newimg->height * newimg->width / BLOCKPIXELS) {
+		int32_t ac, dc;
+		uint8_t acpixels = 0;
+
+		if ((err = read_dc(fd, &state, &dc)) < 0) {
+			/* It is not an error to run out of data at the end of a block. */
+			if (err == -EBADF)
+				err = 0;
+			break;
 		}
-		/* Sign extension yo */
-		newimg->data[i] = temp;
+		newimg->data[BLOCKPIXELS * block] = dc;
+		while (acpixels < BLOCKPIXELS - 1) {
+			/* Use goto to break out of two loops. */
+			if ((err = read_ac(fd, &state, &acpixels, &ac)) < 0)
+				goto done;
+			newimg->data[BLOCKPIXELS * block + acpixels] = ac;
+		}
+
+		block += 1;
+	}
+done:
+	if (err < 0) {
+		image_free(newimg);
+		goto out;
 	}
 	*img = newimg;
 	err = 0;
@@ -148,6 +170,159 @@ imagefile_write_huffman(int fd, struct image *img)
 	}
 	if ((err = flushbits(fd, &state)) < 0)
 		goto out;
+	err = 0;
+
+out:
+	return err;
+}
+
+static int
+read_ac(int fd, uint32_t *state, uint8_t *acpixels, int32_t *ac)
+{
+	int err;
+	uint8_t size, zeroes;
+	uint16_t tmp;
+	/* Start with the sentinel bit, just like the one prepended to each array entry. */
+	uint32_t huff = 1;
+
+	if (!state)
+		return -EFAULT;
+
+	/* Scan the Huffman table for a match. */
+	while (1) {
+		/* Read a single bit and append it to our candidate prefix. */
+		if ((err = readbits(fd, state, &tmp, 1)) < 0)
+			goto out;
+		huff <<= 1;
+		huff |= tmp;
+
+		/* Try matching everything in the table to find the index. */
+		for (size_t i = 0; i < array_size(huffman_ac); i += 1) {
+			for (size_t j = 0; j < array_size(huffman_ac[i]); j += 1) {
+				if (huffman_ac[i][j] == huff) {
+					size = i;
+					zeroes = j;
+					goto found;
+				}
+			}
+		}
+
+		/* Bail if we read too much. */
+		if (huff > 0x100000)
+			goto out;
+	}
+
+found:
+	/* Handle the run length (and the current pixel [the one with the value]), including EOB. */
+	if (!size && !zeroes)
+		*acpixels = 63;
+	else
+		*acpixels += zeroes + 1;
+
+	/* Read the variable-length integer. */
+	if (size) {
+		if ((err = readbits(fd, state, &tmp, size)) < 0)
+			goto out;
+		*ac = tmp;
+	} else {
+		*ac = 0;
+	}
+
+	/* Apply translation for negative values. */
+	if (*ac < 1 << (size - 1))
+		*ac -= (1 << size) - 1;
+	err = 0;
+
+out:
+	return err;
+}
+
+static int
+read_dc(int fd, uint32_t *state, int32_t *dc)
+{
+	int err;
+	uint8_t size;
+	uint16_t tmp;
+	/* Start with the sentinel bit, just like the one prepended to each array entry. */
+	uint32_t huff = 1;
+
+	if (!state)
+		return -EFAULT;
+
+	/* Scan the Huffman table for a match. */
+	while (1) {
+		/* Read a single bit and append it to our candidate prefix. */
+		if ((err = readbits(fd, state, &tmp, 1)) < 0)
+			goto out;
+		huff <<= 1;
+		huff |= tmp;
+
+		/* Try matching everything in the table to find the index. */
+		for (size_t i = 0; i < array_size(huffman_dc); i += 1) {
+			if (huffman_dc[i] == huff) {
+				size = i;
+				goto found;
+			}
+		}
+
+		/* Bail if we read too much. */
+		if (huff > 0x10000)
+			goto out;
+	}
+
+found:
+	if (size) {
+		/* Read the variable-length integer. */
+		if ((err = readbits(fd, state, &tmp, size)) < 0)
+			goto out;
+		*dc = tmp;
+	} else {
+		*dc = 0;
+	}
+
+	/* Apply translation for negative values. */
+	if (*dc < 1 << (size - 1))
+		*dc -= (1 << size) - 1;
+	err = 0;
+
+out:
+	return err;
+}
+
+static int
+readbits(int fd, uint32_t *state, uint16_t *out, uint8_t numbits)
+{
+	int err;
+	uint8_t cursize;
+
+	if (!state)
+		return -EFAULT;
+	if (numbits > (sizeof(*out) * CHAR_BIT))
+		return -EINVAL;
+
+	cursize = log2u32(*state);
+
+	/* Read more bits from the file if necessary. */
+	if (numbits > cursize) {
+		size_t morebytes = (numbits - cursize + CHAR_BIT - 1) / CHAR_BIT;
+
+		/* Record the additional space we have filled. */
+		cursize += morebytes * CHAR_BIT;
+		/* Shift the existing data out of the way */
+		*state <<= morebytes * CHAR_BIT;
+		/* Living dangerously... assumes little-endian. */
+		if ((err = readall(fd, state, morebytes)) < 0)
+			goto out;
+	}
+
+	/* Copy the most significant numbits bits to the output variable. */
+	*out = *state >> (cursize - numbits);
+	*out &= (1U << numbits) - 1;
+	cursize -= numbits;
+	/* Create a new sentinel. */
+	*state |= 1 << cursize;
+	/* Erase everything to the left of the sentinel. */
+	*state &= (1U << (cursize + 1)) - 1;
 	err = 0;
 
 out:
