@@ -35,8 +35,11 @@ main(int argc, char *argv[])
 	}
 
 	printf("Decompressing %s to %s\n", infile, outfile);
-	err = -imagefile_decompress(infd, outfd);
+	if ((err = -imagefile_decompress(infd, outfd)) > 0)
+		goto out_close_outfd;
+	printf("Successfully read a %zu byte image\n", totalread);
 
+out_close_outfd:
 	close(outfd);
 out_close_infd:
 	close(infd);

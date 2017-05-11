@@ -7,6 +7,9 @@
 #ifndef IMGCOMP_HUFFMAN_H
 #define IMGCOMP_HUFFMAN_H
 
+extern size_t totalread;
+extern size_t totalwritten;
+
 int imagefile_read_huffman(int fd, size_t depth, struct image **img);
 int imagefile_write_huffman(int fd, struct image *img);
 

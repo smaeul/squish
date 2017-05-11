@@ -35,8 +35,11 @@ main(int argc, char *argv[])
 	}
 
 	printf("Compressing %s to %s\n", infile, outfile);
-	err = -imagefile_compress(infd, outfd);
+	if ((err = -imagefile_compress(infd, outfd)) > 0)
+		goto out_close_outfd;
+	printf("Successfully wrote a %zu byte image\n", totalwritten);
 
+out_close_outfd:
 	close(outfd);
 out_close_infd:
 	close(infd);
