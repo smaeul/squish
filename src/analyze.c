@@ -67,6 +67,7 @@ main(int argc, char *argv[])
 	} else if (decompressor == 0) {
 		/* Decompressor child */
 		err = -imagefile_decompress(pipefd[0], tmpfd, step);
+		writeall(tmpfd, &totalread, sizeof(totalread));
 		/* TODO: time decompression. */
 		goto out_close_tmpfd;
 	}
@@ -106,8 +107,9 @@ main(int argc, char *argv[])
 	if ((err = -imagefile_compare(infd, tmpfd, &stats))) {
 		fprintf(stderr, "Comparison failed: %s\n", strerror(err));
 	} else {
-		printf("Quantization Step  Mean Squared Error  Peak SNR (dB)\n");
-		printf("%17.2f  %18.2f  %13.2f\n", step, stats.mse, stats.psnr);
+		readall(tmpfd, &totalread, sizeof(totalread));
+		printf("Quantization Step  Compressed Size  Mean Squared Error  Peak SNR (dB)\n");
+		printf("%17.2f  %18zu  %18.2f  %13.2f\n", step, totalread, stats.mse, stats.psnr);
 	}
 
 out_close_tmpfd:
