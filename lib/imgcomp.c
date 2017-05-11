@@ -62,9 +62,7 @@ imagefile_compress(int infd, int outfd)
 		goto out_free_img2;
 	if ((err = image_fzigzag(img3, &img4)) < 0)
 		goto out_free_img3;
-	/* Use the full bit depth when writing out the image. */
-	img4->depth = IMAGE_MAXDEPTH;
-	if ((err = imagefile_write_raw(outfd, img4)) < 0)
+	if ((err = imagefile_write_huffman(outfd, img4)) < 0)
 		goto out_free_img4;
 	err = 0;
 
@@ -87,10 +85,8 @@ imagefile_decompress(int infd, int outfd)
 	struct image *img1, *img2, *img4;
 	struct imagef *img3;
 
-	if ((err = imagefile_read_raw(infd, IMAGE_MAXDEPTH, &img1)) < 0)
+	if ((err = imagefile_read_huffman(infd, TEST_DEPTH, &img1)) < 0)
 		goto out;
-	/* Use the expected bit depth when processing the image. */
-	img1->depth = TEST_DEPTH;
 	if ((err = image_izigzag(img1, &img2)) < 0)
 		goto out_free_img1;
 	if ((err = image_dequant_weighted(img2, &img3, 1)) < 0)
