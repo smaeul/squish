@@ -5,12 +5,35 @@
  */
 
 #include <errno.h>
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include <imgcomp/imgcomp.h>
+
+uint8_t
+log2i32(int32_t n)
+{
+	/* __builtin_clz() is not defined if the input is zero. */
+	if (!n)
+		return 0;
+
+	/* Round up (really, "the number of significant bits including the leftmost one"). */
+	return sizeof(n) * CHAR_BIT - __builtin_clz(n >= 0 ? n : -n);
+}
+
+uint8_t
+log2u32(uint32_t n)
+{
+	/* __builtin_clz() is not defined if the input is zero. */
+	if (!n)
+		return 0;
+
+	/* Round down (really, "the number of bits after the most significant one"). */
+	return sizeof(n) * CHAR_BIT - __builtin_clz(n) - 1;
+}
 
 int
 readall(int fd, void *buffer, size_t size)
